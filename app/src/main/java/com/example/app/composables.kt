@@ -23,6 +23,8 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -128,12 +130,17 @@ fun AppContent() {
         }
     }
 
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Box(
+        Modifier.fillMaxSize()
+    ) {
+        if (capturedImageUri.path?.isNotEmpty() == true) {
+            Image(
+                modifier = Modifier
+                    .padding(16.dp, 8.dp),
+                painter = rememberAsyncImagePainter(capturedImageUri),
+                contentDescription = null
+            )
+        }
             StandardizedButton(
                 text = "Capture Image From Camera",
                 onClick = {
@@ -145,18 +152,15 @@ fun AppContent() {
                         // Request a permission
                         permissionLauncher.launch(Manifest.permission.CAMERA)
                     }
-                }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
             )
+
         }
 
-        if (capturedImageUri.path?.isNotEmpty() == true) {
-            Image(
-                modifier = Modifier
-                    .padding(16.dp, 8.dp),
-                painter = rememberAsyncImagePainter(capturedImageUri),
-                contentDescription = null
-            )
-        }
+
 
 
 }
