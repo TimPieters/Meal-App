@@ -24,15 +24,23 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
+import com.example.app.ui.theme.PlayfulFontFamily
 import java.util.Objects
-
-
 
 
 @Composable
@@ -50,6 +58,42 @@ fun GradientBackground(content: @Composable () -> Unit) {
             )
     ) {
         content()
+    }
+}
+
+fun Modifier.fadingEdge(brush: Brush) = this
+    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+    .drawWithContent {
+        drawContent()
+        drawRect(brush = brush, blendMode = BlendMode.DstIn)
+    }
+
+@Composable
+fun StandardizedButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9eb1b8)),
+        modifier = modifier
+            .padding(16.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(20.dp)
+            ),
+        shape = RoundedCornerShape(20.dp),
+        enabled = enabled
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontFamily = PlayfulFontFamily,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -84,34 +128,35 @@ fun AppContent() {
         }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = {
-            val permissionCheckResult =
-                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                cameraLauncher.launch(uri)
-            } else {
-                // Request a permission
-                permissionLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }) {
-            Text(text = "Capture Image From Camera")
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            StandardizedButton(
+                text = "Capture Image From Camera",
+                onClick = {
+                    val permissionCheckResult =
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                        cameraLauncher.launch(uri)
+                    } else {
+                        // Request a permission
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }
+            )
         }
-    }
 
-    if (capturedImageUri.path?.isNotEmpty() == true) {
-        Image(
-            modifier = Modifier
-                .padding(16.dp, 8.dp),
-            painter = rememberAsyncImagePainter(capturedImageUri),
-            contentDescription = null
-        )
-    }
+        if (capturedImageUri.path?.isNotEmpty() == true) {
+            Image(
+                modifier = Modifier
+                    .padding(16.dp, 8.dp),
+                painter = rememberAsyncImagePainter(capturedImageUri),
+                contentDescription = null
+            )
+        }
 
 
 }

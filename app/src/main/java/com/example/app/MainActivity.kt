@@ -17,9 +17,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen(onContinueClicked = {
+            HomeScreen(
                 // TODO: Navigate to the next screen or perform an action
-            })
+            )
     }
 }
 }

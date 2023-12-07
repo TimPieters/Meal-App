@@ -26,18 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.GradientBackground
 import com.example.app.R
+import com.example.app.StandardizedButton
+import com.example.app.fadingEdge
 import com.example.app.ui.theme.PlayfulFontFamily
 
-fun Modifier.fadingEdge(brush: Brush) = this
-    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
-        drawRect(brush = brush, blendMode = BlendMode.DstIn)
-    }
 val bottomFade = Brush.verticalGradient(0.9f to Color.Red, 1f to Color.Transparent)
-
 @Composable
-fun HomeScreen(onContinueClicked: () -> Unit) {
+fun HomeScreen() {
     GradientBackground {
         Box(modifier = Modifier.fillMaxSize()) {
             // Background image with gradient overlay
@@ -64,22 +59,13 @@ fun HomeScreen(onContinueClicked: () -> Unit) {
                     fontFamily = PlayfulFontFamily, fontSize = 20.sp,
                     fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(32.dp))
-                Button(
-                    onClick = onContinueClicked,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9eb1b8)),
-                    modifier = Modifier
-                        .padding(16.dp) // Padding around the button
-                        .shadow(
-                        elevation = 4.dp, // Set the elevation for the size of the shadow
-                        shape = RoundedCornerShape(20.dp) // Set the shape of the button and shadow
-                    ),
-                    shape = RoundedCornerShape(20.dp) // Ensure the shape matches the shadow's shape
-                ) {
-
-                    Text("Continue to app",color = Color.White,
-                        fontFamily = PlayfulFontFamily, fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold)
+                val onContinueClicked = {
+                    // Handle the continue action
                 }
+                StandardizedButton(
+                    text = "Continue to app",
+                    onClick = onContinueClicked
+                )
             }
         }
     }

@@ -8,16 +8,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.app.AppContent
 import androidx.compose.ui.Modifier
+import com.example.app.GradientBackground
 
 
 @Preview
 @Composable
 fun CameraScreen() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.White // Use a basic color for the background
-    ) {
+    GradientBackground {
         AppContent()
     }
-
 }
