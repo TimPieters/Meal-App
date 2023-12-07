@@ -1,9 +1,6 @@
 package com.example.app
 
-import android.content.ContentValues
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -15,15 +12,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
 import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberAsyncImagePainter
+import java.util.Objects
+
+
 
 
 @Composable
@@ -44,64 +53,65 @@ fun GradientBackground(content: @Composable () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
-fun CameraCapture(onImageCaptured: (Uri?) -> Unit) {
+fun AppContent() {
+
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var hasCameraPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) == PermissionChecker.PERMISSION_GRANTED
+    val file = context.createImageFile()
+    val uri = FileProvider.getUriForFile(
+        Objects.requireNonNull(context),
+        BuildConfig.APPLICATION_ID + ".provider", file
+    )
+
+    var capturedImageUri by remember {
+        mutableStateOf<Uri>(Uri.EMPTY)
+    }
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            capturedImageUri = uri
+        }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
+            cameraLauncher.launch(uri)
+        } else {
+            Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            val permissionCheckResult =
+                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                cameraLauncher.launch(uri)
+            } else {
+                // Request a permission
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }) {
+            Text(text = "Capture Image From Camera")
+        }
+    }
+
+    if (capturedImageUri.path?.isNotEmpty() == true) {
+        Image(
+            modifier = Modifier
+                .padding(16.dp, 8.dp),
+            painter = rememberAsyncImagePainter(capturedImageUri),
+            contentDescription = null
         )
     }
 
-    // Define the launcher for taking a picture
-    val takePictureLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { isSuccess ->
-        if (isSuccess) {
-            // If the picture was successfully taken, pass the URI to the callback
-            onImageCaptured(imageUri)
-        }
-    }
 
-    // Define the launcher for the camera permission
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            hasCameraPermission = isGranted
-        }
-    )
-
-    LaunchedEffect(key1 = hasCameraPermission) {
-        if (!hasCameraPermission) {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-
-    if (hasCameraPermission) {
-        Button(onClick = {
-            // Create the ContentValues for the new image
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, "new_image_${System.currentTimeMillis()}.jpg")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString())
-                }
-            }
-
-            // Insert the ContentValues into the MediaStore and get the Uri for the new image
-            imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-            // Launch the camera with the Uri
-            imageUri?.let { uri ->
-                takePictureLauncher.launch(uri)
-            }
-        }) {
-            Text("Take Picture")
-        }
-    } else {
-        Text("Requesting camera permission...")
-    }
 }
