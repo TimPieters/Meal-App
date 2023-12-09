@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.GradientBackground
 import com.example.app.R
+import com.example.app.TopBar
 import com.example.app.fadingEdge
 
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
@@ -37,7 +38,9 @@ fun CameraScreen() {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        ) {TopBar(onBackClicked = {},
+            profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
+            onProfileClicked = {})
             Box(
                 contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
