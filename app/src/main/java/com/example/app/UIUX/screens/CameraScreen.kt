@@ -2,6 +2,7 @@ package com.example.app.UIUX.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.app.GradientBackground
 import com.example.app.R
 import com.example.app.TopBar
+import com.example.app.UploadImageButton
 import com.example.app.fadingEdge
 
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
@@ -64,7 +66,10 @@ fun CameraScreen() {
                 .fillMaxWidth()
                 .fadingEdge(topBottomFade)
         )
+            UploadImageButton(onImageUriReceived = {})
+    }
+
+        AppContent()
 
     }
-        AppContent()
-}}
+}

@@ -36,7 +36,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
@@ -53,6 +52,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.app.ui.theme.PlayfulFontFamily
 import java.util.Objects
 import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.LaunchedEffect
+
 
 @Composable
 fun GradientBackground(content: @Composable () -> Unit) {
@@ -117,7 +118,8 @@ fun TopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .background(Color.White.copy(alpha = 0.95f)), // Semi-transparent white background
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClicked) {
@@ -129,7 +131,8 @@ fun TopBar(
                 painter = profilePicturePainter,
                 contentDescription = "Profile",
                 modifier =
-                Modifier.clip(CircleShape)
+                Modifier
+                    .clip(CircleShape)
                     .size(48.dp)
 
             )
@@ -198,7 +201,48 @@ fun AppContent() {
 
         }
 
+}
 
+@Composable
+fun UploadImageButton(onImageUriReceived: (Uri?) -> Unit) {
+    val context = LocalContext.current
+    var permissionGranted by remember { mutableStateOf(false) }
 
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        onImageUriReceived(uri)
+    }
 
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        permissionGranted = isGranted
+    }
+
+    LaunchedEffect(Unit) {
+        permissionGranted = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!permissionGranted) {
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+Box(){
+    StandardizedButton(
+        text = "Upload Image",
+        onClick = {
+            if (permissionGranted) {
+                pickImageLauncher.launch("image/*")
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        },
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(16.dp)
+    )
+}
 }
