@@ -36,6 +36,5 @@ val Typography = Typography(
 )
 
 val PlayfulFontFamily = FontFamily(
-    Font(R.font.architects_daughter),
-    Font(R.font.architects_daughter, weight = FontWeight.Bold)
+    Font(R.font.proximanova_bold)
 )

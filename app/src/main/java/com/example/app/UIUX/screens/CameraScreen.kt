@@ -31,6 +31,7 @@ import com.example.app.R
 import com.example.app.TopBar
 import com.example.app.UploadImageButton
 import com.example.app.fadingEdge
+import com.example.app.ui.theme.PlayfulFontFamily
 
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
 @Preview
@@ -54,6 +55,7 @@ fun CameraScreen() {
                 Text(
                     "Take a picture of your fridge!",
                     color = Color.Black,
+                    fontFamily = PlayfulFontFamily,
                     fontSize = 16.sp
                 )
             }

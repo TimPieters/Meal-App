@@ -94,9 +94,9 @@ fun StandardizedButton(
             .padding(16.dp)
             .shadow(
                 elevation = 4.dp,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(36.dp)
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(36.dp),
         enabled = enabled
     ) {
         Text(
@@ -119,7 +119,7 @@ fun TopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(Color.White.copy(alpha = 0.95f)), // Semi-transparent white background
+            .background(Color(0xFF9eb1b8)), // Semi-transparent white background
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClicked) {
