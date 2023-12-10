@@ -5,6 +5,12 @@
       <entry key="CameraScreen">
         <State />
       </entry>
+      <entry key="CameraScreenBottomBar">
+        <State />
+      </entry>
+      <entry key="CameraScreenBottomBarPreview">
+        <State />
+      </entry>
       <entry key="GreetingPreview">
         <State />
       </entry>

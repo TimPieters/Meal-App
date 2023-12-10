@@ -29,8 +29,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,6 +40,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
@@ -55,10 +59,13 @@ import com.example.app.ui.theme.PlayfulFontFamily
 import java.util.Objects
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.*
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.PreviewParameter
 
 
 @Composable
@@ -125,7 +132,7 @@ fun TopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(Color(0xFF9eb1b8)), // Semi-transparent white background
+            .background(Color(0xFF9eb1b8)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClicked) {
@@ -254,27 +261,25 @@ Box(){
 }
 }
 
-@Preview
 @Composable
 fun ProcessRow() {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProcessStep(
             icon = R.drawable.ic_camera, // Replace with your camera icon resource ID
-            title = "Taking a picture"
+            title = "1. Take a picture"
         )
         ProcessStep(
             icon = R.drawable.ic_ai, // Replace with your AI analysis icon resource ID
-            title = "Analysed by AI"
+            title = "2. Analysis by AI"
         )
         ProcessStep(
             icon = R.drawable.ic_recipe, // Replace with your meal/checkmark icon resource ID
-            title = "Get Recipes"
+            title = "3. Get Recipes"
         )
     }
 }
@@ -304,10 +309,68 @@ fun ProcessStep(icon: Int, title: String) {
         Spacer(modifier = Modifier.height(4.dp)) // Space between icon and text
         Text(
             text = title,
-            fontSize = 12.sp,
+            fontSize = 15.sp,
             fontFamily = PlayfulFontFamily,
             color = Color.White,
-            modifier = Modifier.padding(top = 4.dp) // Space above the title
         )
     }
+}
+
+@Composable
+fun CameraScreenBottomBar(
+    onCaptureClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Box(
+        modifier = modifier
+    ) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        color = Color(0xFF9eb1b8),
+        shadowElevation = 4.dp
+        ) {
+
+    }
+
+        Button(
+            onClick = onCaptureClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = (-16).dp) // Negative offset to make the button pop out
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(50), // Circular button
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = Color.White
+            ),
+            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp) // Adds elevation to the button
+        )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.ic_camera_transparant),
+                contentDescription = "Capture",
+                modifier = Modifier.size(24.dp) // Adjust size as needed
+            )
+            Spacer(Modifier.width(8.dp)) // Spacing between icon and text
+            Text(
+                text = "Capture Image From Camera",
+                modifier = Modifier.padding(start = 8.dp),
+                fontFamily = PlayfulFontFamily,
+                color = Color.Black,
+
+            )
+
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CameraScreenBottomBarPreview() {
+    CameraScreenBottomBar(onCaptureClicked = {
+        // Define a mock action or leave it empty for preview purposes
+    })
 }

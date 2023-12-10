@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app.CameraScreenBottomBar
 import com.example.app.GradientBackground
 import com.example.app.ProcessRow
 import com.example.app.R
@@ -38,33 +39,23 @@ import com.example.app.UploadImageButton
 import com.example.app.fadingEdge
 import com.example.app.ui.theme.PlayfulFontFamily
 
+
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
 @Preview
 @Composable
 fun CameraScreen() {
     GradientBackground {
+        Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {TopBar(onBackClicked = {},
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {TopBar(
+            onBackClicked = {},
             profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
             onProfileClicked = {})
-            Box(
-                contentAlignment = Alignment.TopCenter,
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .background(Color.White, shape = RoundedCornerShape(50)) // Oval shape
-                    .padding(horizontal = 20.dp, vertical = 10.dp) // Padding inside the box
 
-            ) {
-                Text(
-                    "Take a picture of your fridge!",
-                    color = Color.Black,
-                    fontFamily = PlayfulFontFamily,
-                    fontSize = 16.sp
-                )
-            }
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // Adjust the space as needed
+
         Image(
             painter = painterResource(id = R.drawable.fridge_camera_screen),
             contentDescription = "Fridge picture",
@@ -76,11 +67,34 @@ fun CameraScreen() {
                 .clip(CircleShape), // Clip the image to a circle
             contentScale = ContentScale.Crop // Crop the image to fill the circle
         )
+            Spacer(modifier = Modifier.height(32.dp)) // Adjust the space as needed
+
+            Box(
+                contentAlignment = Alignment.TopCenter,
+            modifier = Modifier
+                .background(Color.White, shape = RoundedCornerShape(50)) // Oval shape
+                .padding(horizontal = 20.dp, vertical = 10.dp) // Padding inside the box
+
+            ) {
+                Text(
+                    "Take a picture of your fridge!",
+                    color = Color.Black,
+                    fontFamily = PlayfulFontFamily,
+                    fontSize = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp)) // Adjust the space as needed
+
             ProcessRow()
-            UploadImageButton(onImageUriReceived = {})
-    }
 
-        AppContent()
 
     }
+        CameraScreenBottomBar(
+            onCaptureClicked = {},
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        )
+    }}
 }
