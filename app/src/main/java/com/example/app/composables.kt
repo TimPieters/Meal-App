@@ -22,6 +22,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,6 +55,10 @@ import com.example.app.ui.theme.PlayfulFontFamily
 import java.util.Objects
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -134,6 +140,7 @@ fun TopBar(
                 Modifier
                     .clip(CircleShape)
                     .size(48.dp)
+                    .border(2.dp, Color.White, CircleShape) // Adds a white border if needed
 
             )
         }
@@ -245,4 +252,62 @@ Box(){
             .padding(16.dp)
     )
 }
+}
+
+@Preview
+@Composable
+fun ProcessRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProcessStep(
+            icon = R.drawable.ic_camera, // Replace with your camera icon resource ID
+            title = "Taking a picture"
+        )
+        ProcessStep(
+            icon = R.drawable.ic_ai, // Replace with your AI analysis icon resource ID
+            title = "Analysed by AI"
+        )
+        ProcessStep(
+            icon = R.drawable.ic_recipe, // Replace with your meal/checkmark icon resource ID
+            title = "Get Recipes"
+        )
+    }
+}
+
+@Composable
+fun ProcessStep(icon: Int, title: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(100.dp) // Size of the circle
+
+                .border(1.dp, Color.Black, CircleShape) // Black border, adjust width as needed
+                .border(width = 2.dp, color = Color.White, shape = CircleShape) // Black border for the circle
+                .padding(4.dp) // Padding inside the circle
+        ) {
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = title,
+                modifier = Modifier.
+                    clip(CircleShape) // Ensure the image itself is also clipped to circle shape
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp)) // Space between icon and text
+        Text(
+            text = title,
+            fontSize = 12.sp,
+            fontFamily = PlayfulFontFamily,
+            color = Color.White,
+            modifier = Modifier.padding(top = 4.dp) // Space above the title
+        )
+    }
 }

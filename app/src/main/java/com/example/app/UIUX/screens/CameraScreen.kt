@@ -2,6 +2,7 @@ package com.example.app.UIUX.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.app.AppContent
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -27,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app.GradientBackground
+import com.example.app.ProcessRow
 import com.example.app.R
 import com.example.app.TopBar
 import com.example.app.UploadImageButton
@@ -63,11 +68,15 @@ fun CameraScreen() {
         Image(
             painter = painterResource(id = R.drawable.fridge_camera_screen),
             contentDescription = "Fridge picture",
-            contentScale = ContentScale.FillWidth, // fill the width of the screen, might crop the image
             modifier = Modifier
-                .fillMaxWidth()
-                .fadingEdge(topBottomFade)
+                .size(300.dp) // Set the size of the circle
+                .border(6.dp, Color.White, CircleShape) // White border, adjust width as needed
+                .padding(6.dp) // Space for the black border, making the white border visible
+                .border(6.dp, Color.Black, CircleShape) // Black border, adjust width as needed
+                .clip(CircleShape), // Clip the image to a circle
+            contentScale = ContentScale.Crop // Crop the image to fill the circle
         )
+            ProcessRow()
             UploadImageButton(onImageUriReceived = {})
     }
 
