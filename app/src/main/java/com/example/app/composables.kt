@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -154,69 +155,6 @@ fun TopBar(
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-fun AppContent() {
-
-    val context = LocalContext.current
-    val file = context.createImageFile()
-    val uri = FileProvider.getUriForFile(
-        Objects.requireNonNull(context),
-        BuildConfig.APPLICATION_ID + ".provider", file
-    )
-
-    var capturedImageUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
-
-    val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            capturedImageUri = uri
-        }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        if (it) {
-            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
-            cameraLauncher.launch(uri)
-        } else {
-            Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    Box(
-        Modifier.fillMaxSize()
-    ) {
-        if (capturedImageUri.path?.isNotEmpty() == true) {
-            Image(
-                modifier = Modifier
-                    .padding(16.dp, 8.dp),
-                painter = rememberAsyncImagePainter(capturedImageUri),
-                contentDescription = null
-            )
-        }
-            StandardizedButton(
-                text = "Capture Image From Camera",
-                onClick = {
-                    val permissionCheckResult =
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                        cameraLauncher.launch(uri)
-                    } else {
-                        // Request a permission
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            )
-
-        }
-
-}
-
 @Composable
 fun UploadImageButton(onImageUriReceived: (Uri?) -> Unit) {
     val context = LocalContext.current
@@ -260,6 +198,60 @@ Box(){
     )
 }
 }
+
+// A function that sets up the necessary components for capturing an image
+@Composable
+fun setupImageCapture(
+    context: Context,
+    onImageCaptured: (Uri) -> Unit
+): () -> Unit {
+    // State to store the captured image URI
+    val capturedImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    // Prepare the file and URI for the image capture
+    val file = context.createImageFile()
+    val uri = FileProvider.getUriForFile(
+        context,
+        BuildConfig.APPLICATION_ID + ".provider",
+        file
+    )
+
+    // Launchers for taking a picture and requesting permission
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            capturedImageUri.value?.let(onImageCaptured)
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            cameraLauncher.launch(uri)
+        } else {
+            Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Check for camera permission when the composable is first launched
+    LaunchedEffect(key1 = true) {
+        val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        if (permissionCheckResult != PackageManager.PERMISSION_GRANTED) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    // Return a lambda that can be called to initiate the image capture process
+    return {
+        val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+            capturedImageUri.value = uri // Update the state with the new URI
+            cameraLauncher.launch(uri)
+        } else {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+}
+
+
 
 @Composable
 fun ProcessRow() {
@@ -334,9 +326,16 @@ fun CameraScreenBottomBar(
         ) {
 
     }
+        // Call the setupImageCapture function and pass the lambda to the Button's onClick
+        val context = LocalContext.current
+        val onImageCaptured: (Uri) -> Unit = { uri ->
+            // Handle the captured image URI
+        }
+        val initiateCapture = setupImageCapture(context, onImageCaptured)
+
 
         Button(
-            onClick = onCaptureClicked,
+            onClick = initiateCapture,
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(y = (-16).dp) // Negative offset to make the button pop out
