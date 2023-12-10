@@ -67,6 +67,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.navigation.NavHostController
+import com.example.app.Navigation.Screen
 
 
 @Composable
@@ -310,7 +312,7 @@ fun ProcessStep(icon: Int, title: String) {
 
 @Composable
 fun CameraScreenBottomBar(
-    onCaptureClicked: () -> Unit,
+    viewModel: SharedViewModel,
     modifier: Modifier = Modifier
 ) {
 
@@ -328,8 +330,8 @@ fun CameraScreenBottomBar(
     }
         // Call the setupImageCapture function and pass the lambda to the Button's onClick
         val context = LocalContext.current
-        val onImageCaptured: (Uri) -> Unit = { uri ->
-            // Handle the captured image URI
+        val onImageCaptured: (Uri) -> Unit = {uri ->
+            viewModel.setImageUri(uri)
         }
         val initiateCapture = setupImageCapture(context, onImageCaptured)
 
@@ -363,13 +365,8 @@ fun CameraScreenBottomBar(
             )
 
         }
+
     }
 }
 
-@Preview
-@Composable
-fun CameraScreenBottomBarPreview() {
-    CameraScreenBottomBar(onCaptureClicked = {
-        // Define a mock action or leave it empty for preview purposes
-    })
-}
+

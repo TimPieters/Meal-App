@@ -1,5 +1,6 @@
 package com.example.app.UIUX.screens
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
@@ -29,10 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.app.CameraScreenBottomBar
 import com.example.app.GradientBackground
+import com.example.app.Navigation.Screen
 import com.example.app.ProcessRow
 import com.example.app.R
+import com.example.app.SharedViewModel
 import com.example.app.TopBar
 import com.example.app.UploadImageButton
 import com.example.app.fadingEdge
@@ -40,9 +46,12 @@ import com.example.app.ui.theme.PlayfulFontFamily
 
 
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
+
 @Preview
 @Composable
-fun CameraScreen() {
+fun CameraScreen(navController: NavHostController, viewModel: SharedViewModel) {
+    val capturedImageUri by viewModel.capturedImageUri.observeAsState()
+
     GradientBackground {
         Box(modifier = Modifier.fillMaxSize()){
         Column(
@@ -89,11 +98,13 @@ fun CameraScreen() {
 
 
     }
-        CameraScreenBottomBar(
-            onCaptureClicked = {},
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        )
+            CameraScreenBottomBar(
+                viewModel = viewModel,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+            )
     }}
+
+
 }
