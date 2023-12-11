@@ -46,7 +46,6 @@ import com.example.app.ProcessRow
 import com.example.app.R
 import com.example.app.SharedViewModel
 import com.example.app.TopBar
-import com.example.app.UploadImageButton
 import com.example.app.fadingEdge
 import com.example.app.ui.theme.PlayfulFontFamily
 
@@ -55,8 +54,6 @@ val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Colo
 
 @Composable
 fun CameraScreen(navController: NavHostController) {
-
-    val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     GradientBackground {
         Box(modifier = Modifier.fillMaxSize()){

@@ -160,47 +160,14 @@ fun TopBar(
 }
 
 @Composable
-fun UploadImageButton(onImageUriReceived: (Uri?) -> Unit) {
-    val context = LocalContext.current
-    var permissionGranted by remember { mutableStateOf(false) }
-
-    val pickImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        onImageUriReceived(uri)
-    }
-
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        permissionGranted = isGranted
-    }
-
-    LaunchedEffect(Unit) {
-        permissionGranted = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-
-        if (!permissionGranted) {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-    }
-Box(){
-    StandardizedButton(
-        text = "Upload Image",
-        onClick = {
-            if (permissionGranted) {
-                pickImageLauncher.launch("image/*")
-            } else {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-        },
+fun ProgressBar(progress: Float) {
+    LinearProgressIndicator(
+        progress = progress.coerceIn(0f, 1f), // Ensures progress is within the valid range
         modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(16.dp)
+            .fillMaxWidth()
+            .height(8.dp),
+        color = Color.White,
     )
-}
 }
 
 // A function that sets up the necessary components for capturing an image

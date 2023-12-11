@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.app.R
 import com.example.app.SharedViewModel
+import com.example.app.TopBar
 
 
 @Composable
@@ -33,14 +34,15 @@ fun ImagePreviewScreen(navController: NavHostController) {
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
+        TopBar(
+            onBackClicked = {navController.popBackStack()},
+            profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
+            onProfileClicked = {})
         // Display the image if it's available
         capturedImageUri?.let { uri ->
             Log.d("ImagePreviewScreen", "URI: $uri")
             Image(
-                painter = rememberAsyncImagePainter(model = uri,
-                    error = painterResource(R.drawable.ic_ai), // Add an error placeholder
-                    placeholder = painterResource(R.drawable.ic_camera) // Add a loading placeholder
-                ),
+                painter = rememberAsyncImagePainter(model = uri),
                 contentDescription = "Preview Image",
                 modifier = Modifier.
                 fillMaxWidth()
