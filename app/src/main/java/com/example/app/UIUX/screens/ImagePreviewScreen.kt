@@ -1,6 +1,5 @@
 package com.example.app.UIUX.screens
 
-import android.net.Uri
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
@@ -18,13 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.app.GradientBackground
+import com.example.app.ProgressBar
 import com.example.app.R
 import com.example.app.SharedViewModel
+import com.example.app.StandardizedButton
 import com.example.app.TopBar
 
 
@@ -32,34 +33,33 @@ import com.example.app.TopBar
 fun ImagePreviewScreen(navController: NavHostController) {
     val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
+    GradientBackground {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopBar(
+                onBackClicked = { navController.popBackStack() },
+                profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
+                onProfileClicked = {})
+            ProgressBar(progress = 0.33F)
+            // Display the image if it's available
+            capturedImageUri?.let { uri ->
+                Log.d("ImagePreviewScreen", "URI: $uri")
+                Image(
+                    painter = rememberAsyncImagePainter(model = uri),
+                    contentDescription = "Preview Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                )
+            }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopBar(
-            onBackClicked = {navController.popBackStack()},
-            profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
-            onProfileClicked = {})
-        // Display the image if it's available
-        capturedImageUri?.let { uri ->
-            Log.d("ImagePreviewScreen", "URI: $uri")
-            Image(
-                painter = rememberAsyncImagePainter(model = uri),
-                contentDescription = "Preview Image",
-                modifier = Modifier.
-                fillMaxWidth()
-                    .aspectRatio(1f)
+            // Add a button for submitting the image or navigating back
+            StandardizedButton(
+                text = "Submit",
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-        }
-
-        // Add a button for submitting the image or navigating back
-        Button(
-            onClick = {
-                // Handle the submission or navigation
-                // For example, to navigate back to the CameraScreen:
-                navController.popBackStack()
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Submit")
         }
     }
 }

@@ -12,10 +12,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import android.Manifest
@@ -55,19 +53,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberAsyncImagePainter
 import com.example.app.ui.theme.PlayfulFontFamily
-import java.util.Objects
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.*
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.app.Navigation.Screen
@@ -162,7 +152,7 @@ fun TopBar(
 @Composable
 fun ProgressBar(progress: Float) {
     LinearProgressIndicator(
-        progress = progress.coerceIn(0f, 1f), // Ensures progress is within the valid range
+        progress = progress,
         modifier = Modifier
             .fillMaxWidth()
             .height(8.dp),
