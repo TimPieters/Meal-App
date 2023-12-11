@@ -5,16 +5,16 @@
       <entry key="CameraScreen">
         <State />
       </entry>
-      <entry key="CameraScreenBottomBar">
+      <entry key="CameraScreenBottomBarPreview">
         <State />
       </entry>
-      <entry key="CameraScreenBottomBarPreview">
+      <entry key="CameraScreenPreview">
         <State />
       </entry>
       <entry key="ImagePreviewScreen">
         <State />
       </entry>
-      <entry key="ProcessRow">
+      <entry key="ImagePreviewScreenPreview">
         <State />
       </entry>
       <entry key="app">

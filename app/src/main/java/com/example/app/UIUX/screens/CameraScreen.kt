@@ -1,6 +1,9 @@
 package com.example.app.UIUX.screens
 
 import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,11 +31,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.app.CameraScreenBottomBar
 import com.example.app.GradientBackground
 import com.example.app.Navigation.Screen
@@ -47,10 +53,10 @@ import com.example.app.ui.theme.PlayfulFontFamily
 
 val topBottomFade = Brush.verticalGradient(0f to Color.Transparent, 0.2f to Color.Red, 0.8f to Color.Red, 1f to Color.Transparent)
 
-@Preview
 @Composable
-fun CameraScreen(navController: NavHostController, viewModel: SharedViewModel) {
-    val capturedImageUri by viewModel.capturedImageUri.observeAsState()
+fun CameraScreen(navController: NavHostController) {
+
+    val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     GradientBackground {
         Box(modifier = Modifier.fillMaxSize()){
@@ -99,12 +105,21 @@ fun CameraScreen(navController: NavHostController, viewModel: SharedViewModel) {
 
     }
             CameraScreenBottomBar(
-                viewModel = viewModel,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                navController = navController
             )
     }}
 
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraScreenPreview() {
+    val fakeNavController = rememberNavController()
+    val fakeViewModel = SharedViewModel() // Assuming default constructor available
+
+    CameraScreen(navController = fakeNavController)
 }

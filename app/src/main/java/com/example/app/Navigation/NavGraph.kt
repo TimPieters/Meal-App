@@ -12,24 +12,17 @@ import com.example.app.UIUX.screens.ImagePreviewScreen
 
 sealed class Screen(val route: String) {
     object CameraScreen : Screen("camera_screen")
-    object ImagePreviewScreen : Screen("image_preview_screen/{imageUri}") {
-        fun createRoute(imageUri: String) = "image_preview_screen/$imageUri"
-    }
+    object ImagePreviewScreen : Screen("image_preview_screen")
+
 }
 @Composable
 fun NavGraph(navController: NavHostController, sharedViewModel: SharedViewModel) {
     NavHost(navController, startDestination = Screen.CameraScreen.route) {
         composable(Screen.CameraScreen.route) {
-            CameraScreen(navController, sharedViewModel)
+            CameraScreen(navController)
         }
-        composable(
-            Screen.ImagePreviewScreen.route,
-            arguments = listOf(navArgument("imageUri") { type = NavType.StringType })
-        ) { backStackEntry ->
-            ImagePreviewScreen(
-                viewModel = sharedViewModel,
-                navController = navController
-            )
+        composable(Screen.ImagePreviewScreen.route){
+            ImagePreviewScreen(navController)
         }
     }
 }

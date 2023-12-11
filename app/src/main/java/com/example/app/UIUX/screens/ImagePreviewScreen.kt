@@ -1,8 +1,11 @@
 package com.example.app.UIUX.screens
 
 import android.net.Uri
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -13,25 +16,35 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.app.R
 import com.example.app.SharedViewModel
 
-@Preview
+
 @Composable
-fun ImagePreviewScreen(viewModel: SharedViewModel, navController: NavHostController) {
-    val context = LocalContext.current
-    val capturedImageUri by viewModel.capturedImageUri.observeAsState()
+fun ImagePreviewScreen(navController: NavHostController) {
+    val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Display the image if it's available
         capturedImageUri?.let { uri ->
+            Log.d("ImagePreviewScreen", "URI: $uri")
             Image(
-                painter = rememberAsyncImagePainter(model = uri),
+                painter = rememberAsyncImagePainter(model = uri,
+                    error = painterResource(R.drawable.ic_ai), // Add an error placeholder
+                    placeholder = painterResource(R.drawable.ic_camera) // Add a loading placeholder
+                ),
                 contentDescription = "Preview Image",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.
+                fillMaxWidth()
+                    .aspectRatio(1f)
             )
         }
 
@@ -47,4 +60,12 @@ fun ImagePreviewScreen(viewModel: SharedViewModel, navController: NavHostControl
             Text("Submit")
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun ImagePreviewScreenPreview() {
+    val fakeNavController = rememberNavController()
+    val fakeViewModel = SharedViewModel() // Provide necessary default data
+
+    ImagePreviewScreen(navController = fakeNavController)
 }

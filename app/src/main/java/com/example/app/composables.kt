@@ -22,6 +22,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -67,6 +68,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.app.Navigation.Screen
 
@@ -312,9 +314,11 @@ fun ProcessStep(icon: Int, title: String) {
 
 @Composable
 fun CameraScreenBottomBar(
-    viewModel: SharedViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
+    val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+
 
     Box(
         modifier = modifier
@@ -331,7 +335,8 @@ fun CameraScreenBottomBar(
         // Call the setupImageCapture function and pass the lambda to the Button's onClick
         val context = LocalContext.current
         val onImageCaptured: (Uri) -> Unit = {uri ->
-            viewModel.setImageUri(uri)
+            sharedViewModel.setImageUri(uri)
+            navController.navigate(Screen.ImagePreviewScreen.route)
         }
         val initiateCapture = setupImageCapture(context, onImageCaptured)
 
