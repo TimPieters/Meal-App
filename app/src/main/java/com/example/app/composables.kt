@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.*
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.app.Navigation.Screen
@@ -151,13 +156,52 @@ fun TopBar(
 
 @Composable
 fun ProgressBar(progress: Float) {
-    LinearProgressIndicator(
-        progress = progress,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(8.dp),
-        color = Color.White,
-    )
+    Column(modifier = Modifier.padding(16.dp)) {
+        LinearProgressIndicator(
+            progress = progress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp),
+            color = Color.White, // It's a good practice to use theme colors
+        )
+        Spacer(modifier = Modifier.height(4.dp)) // Space between the progress bar and text
+        Text(
+            text = "${(progress * 100).toInt()}%", // Convert progress to a percentage
+            color = Color.White, // Use a color that contrasts with the surface color
+        )
+    }
+}
+
+@Composable
+fun SegmentedProgressBar(currentStep: Int, totalSteps: Int) {
+    val segmentColor = Color.White
+    val inactiveSegmentColor = Color.Gray.copy(alpha = 0.5f)
+    val segmentWidth = with(LocalDensity.current) { 8.dp.toPx() }
+    val spaceBetween = with(LocalDensity.current) { 8.dp.toPx() }
+    val horizontalPadding = with(LocalDensity.current) { 8.dp.toPx() }
+    val cornerRadius = with(LocalDensity.current) { 4.dp.toPx() }
+
+    Canvas(modifier = Modifier
+        .fillMaxWidth()
+        .height(16.dp)
+        .padding(horizontal = 16.dp)) { // Add padding to the Modifier
+
+        val totalPadding = horizontalPadding * 2
+        val segmentLength = (size.width - totalPadding - spaceBetween * (totalSteps - 1)) / totalSteps
+
+        // Draw each segment
+        for (i in 0 until totalSteps) {
+            val color = if (i < currentStep) segmentColor else inactiveSegmentColor
+            val start = horizontalPadding + (segmentLength + spaceBetween) * i
+            val end = start + segmentLength
+            drawRoundRect(
+                color = color,
+                topLeft = Offset(start, size.height / 2 - segmentWidth / 2),
+                size = Size(segmentLength, segmentWidth),
+                cornerRadius = CornerRadius(cornerRadius, cornerRadius)
+            )
+        }
+    }
 }
 
 // A function that sets up the necessary components for capturing an image

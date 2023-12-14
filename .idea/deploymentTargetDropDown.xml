@@ -2,18 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="CameraScreen">
-        <State />
-      </entry>
-      <entry key="CameraScreenBottomBarPreview">
-        <State />
-      </entry>
-      <entry key="CameraScreenPreview">
-        <State />
-      </entry>
-      <entry key="ImagePreviewScreen">
-        <State />
-      </entry>
       <entry key="ImagePreviewScreenPreview">
         <State />
       </entry>

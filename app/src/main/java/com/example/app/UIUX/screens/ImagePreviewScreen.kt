@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -24,6 +27,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.app.GradientBackground
 import com.example.app.ProgressBar
 import com.example.app.R
+import com.example.app.SegmentedProgressBar
 import com.example.app.SharedViewModel
 import com.example.app.StandardizedButton
 import com.example.app.TopBar
@@ -39,7 +43,9 @@ fun ImagePreviewScreen(navController: NavHostController) {
                 onBackClicked = { navController.popBackStack() },
                 profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
                 onProfileClicked = {})
-            ProgressBar(progress = 0.33F)
+            Spacer(modifier = Modifier.height(12.dp)) // Increase the height as needed for more space
+            SegmentedProgressBar(currentStep = 1, totalSteps = 3)
+            Spacer(modifier = Modifier.height(12.dp)) // Increase the height as needed for more space
             // Display the image if it's available
             capturedImageUri?.let { uri ->
                 Log.d("ImagePreviewScreen", "URI: $uri")
