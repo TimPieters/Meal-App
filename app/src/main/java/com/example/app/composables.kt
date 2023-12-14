@@ -62,9 +62,11 @@ import androidx.compose.material3.*
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.app.Navigation.Screen
 
 
@@ -201,6 +203,32 @@ fun SegmentedProgressBar(currentStep: Int, totalSteps: Int) {
                 cornerRadius = CornerRadius(cornerRadius, cornerRadius)
             )
         }
+    }
+}
+
+@Composable
+fun FramedImage(
+    imageUri: Uri,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(12.dp) // Choose a corner shape for the frame
+
+    // Outer shadow for depth
+    Box(
+        modifier = modifier
+            .shadow(4.dp, shape, clip = false)
+            .background(Color.White, shape) // Background color for the frame
+            .clip(shape) // Clip the image to the shape
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = imageUri,
+            ),
+            contentDescription = contentDescription,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit // Adjust this based on how you want to scale the image within the frame
+        )
     }
 }
 

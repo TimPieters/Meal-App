@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.app.FramedImage
 import com.example.app.GradientBackground
 import com.example.app.ProgressBar
 import com.example.app.R
@@ -48,13 +50,13 @@ fun ImagePreviewScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(12.dp)) // Increase the height as needed for more space
             // Display the image if it's available
             capturedImageUri?.let { uri ->
-                Log.d("ImagePreviewScreen", "URI: $uri")
-                Image(
-                    painter = rememberAsyncImagePainter(model = uri),
+                FramedImage(
+                    imageUri = uri,
                     contentDescription = "Preview Image",
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
+                        .padding(8.dp) // Add padding to create a margin around the frame
                 )
             }
 
