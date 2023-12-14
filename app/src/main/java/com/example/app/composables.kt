@@ -212,9 +212,9 @@ fun FramedImage(
     contentDescription: String,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(12.dp) // Choose a corner shape for the frame
+    val shape = RoundedCornerShape(12.dp) // Define the corner shape for the frame
 
-    // Outer shadow for depth
+    // Box to hold the image with shadow for depth and rounded corners for the frame
     Box(
         modifier = modifier
             .shadow(4.dp, shape, clip = false)
@@ -226,8 +226,8 @@ fun FramedImage(
                 model = imageUri,
             ),
             contentDescription = contentDescription,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit // Adjust this based on how you want to scale the image within the frame
+            modifier = Modifier.fillMaxWidth(), // Fill the width and adjust the height based on the image's aspect ratio
+            contentScale = ContentScale.Fit // Ensures the image is not cropped
         )
     }
 }

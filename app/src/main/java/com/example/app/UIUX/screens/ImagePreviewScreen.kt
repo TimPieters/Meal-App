@@ -55,7 +55,6 @@ fun ImagePreviewScreen(navController: NavHostController) {
                     contentDescription = "Preview Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
                         .padding(8.dp) // Add padding to create a margin around the frame
                 )
             }
