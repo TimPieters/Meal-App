@@ -38,6 +38,7 @@ import com.example.app.TopBar
 @Composable
 fun ImagePreviewScreen(navController: NavHostController) {
     val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val context = LocalContext.current // Get context here
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
     GradientBackground {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -63,7 +64,9 @@ fun ImagePreviewScreen(navController: NavHostController) {
             StandardizedButton(
                 text = "Submit",
                 onClick = {
-                    navController.popBackStack()
+                    capturedImageUri?.let { uri ->
+                        sharedViewModel.submitImageToOpenAI(uri, context)
+                    }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )

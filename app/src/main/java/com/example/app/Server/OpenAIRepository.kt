@@ -20,7 +20,7 @@ class OpenAIRepository {
                     "content" to listOf(
                         mapOf(
                             "type" to "text",
-                            "text" to "What’s in this image?"
+                            "text" to "What’s in this fridge? Write it in bulletpoints."
                         ),
                         mapOf(
                             "type" to "image_url",
