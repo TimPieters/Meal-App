@@ -28,11 +28,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -212,7 +214,7 @@ fun FramedImage(
     contentDescription: String,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(12.dp) // Define the corner shape for the frame
+    val shape = RoundedCornerShape(56.dp) // Define the corner shape for the frame
 
     // Box to hold the image with shadow for depth and rounded corners for the frame
     Box(
@@ -220,13 +222,15 @@ fun FramedImage(
             .shadow(4.dp, shape, clip = false)
             .background(Color.White, shape) // Background color for the frame
             .clip(shape) // Clip the image to the shape
+            .aspectRatio(1f) // Maintain the aspect ratio of the frame
     ) {
         Image(
             painter = rememberAsyncImagePainter(
                 model = imageUri,
             ),
             contentDescription = contentDescription,
-            modifier = Modifier.fillMaxWidth(), // Fill the width and adjust the height based on the image's aspect ratio
+            modifier = Modifier
+                .fillMaxSize(), // Image should fill the frame maintaining its aspect ratio
             contentScale = ContentScale.Fit // Ensures the image is not cropped
         )
     }
