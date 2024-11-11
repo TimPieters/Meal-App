@@ -2,10 +2,8 @@ package com.example.app.Navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.app.SharedViewModel
 import com.example.app.UIUX.screens.CameraScreen
 import com.example.app.UIUX.screens.ImagePreviewScreen

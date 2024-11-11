@@ -29,7 +29,7 @@ class SharedViewModel : ViewModel() {
 
             // Use your repository to send the encoded image to OpenAI's API
             // and handle the response (this is a simplification)
-            val response = openAIRepository.analyzeImage(base64Image)
+            // val response = openAIRepository.analyzeImage(base64Image)
             // Process the response here...
         }
     }
