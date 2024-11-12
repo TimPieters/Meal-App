@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     // Toggle this to switch between the test button and your main app navigation
-                    val isTesting = true
+                    val isTesting = false
 
                     if (isTesting) {
                         OpenAITestContent()

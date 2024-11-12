@@ -30,46 +30,65 @@ import com.example.app.GradientBackground
 import com.example.app.ProgressBar
 import com.example.app.R
 import com.example.app.SegmentedProgressBar
+import com.example.app.Server.OpenAIViewModel
 import com.example.app.SharedViewModel
 import com.example.app.StandardizedButton
 import com.example.app.TopBar
+import androidx.compose.runtime.*
 
 
 @Composable
-fun ImagePreviewScreen(navController: NavHostController) {
+fun ImagePreviewScreen(
+    navController: NavHostController,
+    openAIViewModel: OpenAIViewModel = viewModel(LocalContext.current as ComponentActivity)
+) {
     val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val context = LocalContext.current // Get context here
+    val context = LocalContext.current
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
+    var resultText by remember { mutableStateOf("") }  // Holds response text from OpenAI
+
     GradientBackground {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBar(
                 onBackClicked = { navController.popBackStack() },
-                profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder), // Replace with an actual image resource
-                onProfileClicked = {})
-            Spacer(modifier = Modifier.height(12.dp)) // Increase the height as needed for more space
+                profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder),
+                onProfileClicked = {}
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             SegmentedProgressBar(currentStep = 1, totalSteps = 3)
-            Spacer(modifier = Modifier.height(12.dp)) // Increase the height as needed for more space
-            // Display the image if it's available
+            Spacer(modifier = Modifier.height(12.dp))
+
             capturedImageUri?.let { uri ->
                 FramedImage(
                     imageUri = uri,
                     contentDescription = "Preview Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp) // Add padding to create a margin around the frame
+                        .padding(8.dp)
                 )
             }
 
-            // Add a button for submitting the image or navigating back
             StandardizedButton(
                 text = "Submit",
                 onClick = {
                     capturedImageUri?.let { uri ->
-                        sharedViewModel.submitImageToOpenAI(uri, context)
+                        val apiKey = ""  // Replace with your actual OpenAI API key
+                        openAIViewModel.analyzeImage(apiKey, uri, context) { response ->
+                            resultText = response  // Set response text to display
+                            Log.d("OpenAI Response", response)
+                        }
                     }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+            if (resultText.isNotEmpty()) {
+                Text(
+                    text = "Response: $resultText",
+                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+                )
+            }
         }
     }
 }

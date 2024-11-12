@@ -5,5 +5,10 @@ data class OpenAIResponse(
 )
 
 data class Choice(
-    val message: Message
+    val message: ReplyMessage  // Renamed to ReplyMessage for clarity
+)
+
+data class ReplyMessage(
+    val role: String,
+    val content: String  // Assuming content in response is always a string
 )
