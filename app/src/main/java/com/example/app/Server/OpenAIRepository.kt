@@ -49,10 +49,13 @@ class OpenAIRepository {
     }
 
     suspend fun sendImageToOpenAI(apiKey: String, imageUri: Uri, context: Context): Response<OpenAIResponse>? {
-        // Log the image aspect ratio
-        logImageAspectRatio(context, imageUri)
+        // Reference a stock image for testing
+        val image = Uri.parse("android.resource://com.example.app/drawable/stock_fridge")
 
-        val base64Image = encodeImageToBase64(context, imageUri)
+        // Log the image aspect ratio
+        logImageAspectRatio(context, image )
+
+        val base64Image = encodeImageToBase64(context, image )
         base64Image?.let {
             val imageData = ImageData(url = "data:image/jpeg;base64,$it")
             val request = OpenAIChatRequest(
@@ -60,12 +63,13 @@ class OpenAIRepository {
                 messages = listOf(
                     Message(
                         role = "system",
-                        content = listOf(Content.Text(text = "Please describe this image."))
+                        content = listOf(Content.Text(text = "Give a list of ingredients seen in a fridge image that can be used for cooking. You always seperate it with a comma delimiter. The first letter of the word should always be capitalized."
+                        ))
                     ),
                     Message(
                         role = "user",
                         content = listOf(
-                            Content.Text(text = "Describe this art style."),
+                            Content.Text(text = "Please give me a list of ingredients from the fridge in the image."),
                             Content.ImageUrl(image_url = imageData)
                         )
                     )

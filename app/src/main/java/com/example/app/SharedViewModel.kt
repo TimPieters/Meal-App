@@ -11,27 +11,47 @@ import com.example.app.Server.OpenAIRepository
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-
 class SharedViewModel : ViewModel() {
     private val _capturedImageUri = MutableLiveData<Uri?>()
     val capturedImageUri: LiveData<Uri?> = _capturedImageUri
+
+    // For storing and managing detected ingredients
+    private val _ingredients = MutableLiveData<MutableList<String>>(mutableListOf())
+    val ingredients: LiveData<MutableList<String>> get() = _ingredients
+
     private val openAIRepository = OpenAIRepository()
+
+    // Set the captured image URI
     fun setImageUri(uri: Uri?) {
         Log.d("SharedViewModel", "Image URI set: $uri")
         _capturedImageUri.value = uri
     }
-    fun submitImageToOpenAI(imageUri: Uri, context: Context) {
-        viewModelScope.launch {
-            val imageStream = context.contentResolver.openInputStream(imageUri)
-            val imageBytes = imageStream?.readBytes()
-            imageStream?.close()
-            val base64Image = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
-
-            // Use your repository to send the encoded image to OpenAI's API
-            // and handle the response (this is a simplification)
-            // val response = openAIRepository.analyzeImage(base64Image)
-            // Process the response here...
+    // Set the initial list of detected ingredients from AI response
+    fun setDetectedIngredients(ingredientList: List<String>) {
+        _ingredients.value = ingredientList.toMutableList()
+        Log.d("SharedViewModel", "Detected ingredients set: $ingredientList")
+    }
+    fun addIngredient(ingredient: String) {
+        _ingredients.value = _ingredients.value?.toMutableList()?.apply {
+            add(ingredient)
+            Log.d("SharedViewModel", "Ingredient added: $ingredient")
         }
     }
 
+    fun removeIngredient(ingredient: String) {
+        _ingredients.value = _ingredients.value?.toMutableList()?.apply {
+            remove(ingredient)
+            Log.d("SharedViewModel", "Ingredient removed: $ingredient")
+        }
+    }
+
+    fun updateIngredient(oldIngredient: String, newIngredient: String) {
+        _ingredients.value = _ingredients.value?.toMutableList()?.apply {
+            val index = indexOf(oldIngredient)
+            if (index != -1) {
+                set(index, newIngredient)  // Update the ingredient directly at its index
+            }
+        }
+        Log.d("SharedViewModel", "Ingredient updated: $oldIngredient -> $newIngredient")
+    }
 }

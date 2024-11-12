@@ -7,20 +7,25 @@ import androidx.navigation.compose.composable
 import com.example.app.SharedViewModel
 import com.example.app.UIUX.screens.CameraScreen
 import com.example.app.UIUX.screens.ImagePreviewScreen
+import com.example.app.UIUX.screens.IngredientScreen
 
 sealed class Screen(val route: String) {
     object CameraScreen : Screen("camera_screen")
     object ImagePreviewScreen : Screen("image_preview_screen")
-
+    object IngredientScreen : Screen("ingredient_screen") // New route for IngredientScreen
 }
+
 @Composable
 fun NavGraph(navController: NavHostController, sharedViewModel: SharedViewModel) {
     NavHost(navController, startDestination = Screen.CameraScreen.route) {
         composable(Screen.CameraScreen.route) {
             CameraScreen(navController)
         }
-        composable(Screen.ImagePreviewScreen.route){
+        composable(Screen.ImagePreviewScreen.route) {
             ImagePreviewScreen(navController)
+        }
+        composable(Screen.IngredientScreen.route) {
+            IngredientScreen(navController, sharedViewModel) // Pass sharedViewModel to IngredientScreen
         }
     }
 }

@@ -45,7 +45,6 @@ fun ImagePreviewScreen(
     val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
     val context = LocalContext.current
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
-    var resultText by remember { mutableStateOf("") }  // Holds response text from OpenAI
 
     GradientBackground {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -68,29 +67,30 @@ fun ImagePreviewScreen(
                 )
             }
 
+            // Submit button that sends the image to OpenAI and navigates to IngredientScreen
             StandardizedButton(
                 text = "Submit",
                 onClick = {
                     capturedImageUri?.let { uri ->
                         val apiKey = ""  // Replace with your actual OpenAI API key
                         openAIViewModel.analyzeImage(apiKey, uri, context) { response ->
-                            resultText = response  // Set response text to display
+                            // Set detected ingredients in sharedViewModel and navigate
+                            sharedViewModel.setDetectedIngredients(parseIngredients(response))
+                            navController.navigate("ingredient_screen")
                             Log.d("OpenAI Response", response)
                         }
                     }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-
-            Spacer(modifier = Modifier.height(20.dp))
-            if (resultText.isNotEmpty()) {
-                Text(
-                    text = "Response: $resultText",
-                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
-                )
-            }
         }
     }
+}
+
+// Function to parse ingredients from the AI response
+fun parseIngredients(response: String): List<String> {
+    // Parse response text into a list of ingredients (example logic)
+    return response.split(",").map { it.trim() }
 }
 @Preview(showBackground = true)
 @Composable
