@@ -33,10 +33,12 @@ fun NavGraph(navController: NavHostController, sharedViewModel: SharedViewModel)
         composable(Screen.IngredientScreen.route) {
             IngredientScreen(navController, sharedViewModel) // Pass sharedViewModel to IngredientScreen
         }
-        composable(Screen.MealScreen.route) { MealScreen(navController, sharedViewModel) }
+        composable(Screen.MealScreen.route) {
+            MealScreen(navController, sharedViewModel)
+        }
         composable(Screen.RecipeScreen.route) { backStackEntry ->
             val mealId = backStackEntry.arguments?.getString("mealId")?.toInt() ?: -1
-            RecipeScreen(mealId, sharedViewModel)
+            RecipeScreen(mealId, navController, sharedViewModel) // Pass both navController and sharedViewModel
         }
     }
 }

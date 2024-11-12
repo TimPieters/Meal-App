@@ -49,7 +49,6 @@ fun IngredientScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
         items(ingredients.size) { index ->
             val ingredient = ingredients[index]
             IngredientCard(
@@ -62,10 +61,8 @@ fun IngredientScreen(
                 onDeleteClick = { sharedViewModel.removeIngredient(ingredient) }
             )
         }
-
         item {
             Spacer(modifier = Modifier.height(16.dp))
-
             // Input field for adding new ingredients
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -110,7 +107,6 @@ fun IngredientScreen(
 
         item {
             Spacer(modifier = Modifier.height(20.dp))
-
             // Confirm button positioned at the bottom
             Button(
                 onClick = {

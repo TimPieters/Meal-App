@@ -16,8 +16,16 @@ import com.google.gson.reflect.TypeToken
 data class Recipe(
     val name: String,
     val ingredients: List<String>,
-    val instructions: List<String>
+    val instructions: List<Instruction>, // Use Instruction class for detailed steps
+    val estimated_total_time: String,
+    val difficulty: String
 )
+
+data class Instruction(
+    val step: String,
+    val approximate_time: String
+)
+
 
 class SharedViewModel : ViewModel() {
     private val _capturedImageUri = MutableLiveData<Uri?>()
@@ -98,12 +106,18 @@ class SharedViewModel : ViewModel() {
         }
     }
     private fun parseRecipes(responseText: String): List<Recipe> {
+        val cleanedText = responseText
+            .trim()
+            .removeSurrounding("```json", "```")
+            .removeSurrounding("```", "```")
+
         return try {
             val recipeListType = object : TypeToken<List<Recipe>>() {}.type
-            Gson().fromJson(responseText, recipeListType)
+            Gson().fromJson<List<Recipe>>(cleanedText, recipeListType)
         } catch (e: Exception) {
             Log.e("SharedViewModel", "Failed to parse recipes: ${e.localizedMessage}")
             emptyList()
         }
     }
+
 }

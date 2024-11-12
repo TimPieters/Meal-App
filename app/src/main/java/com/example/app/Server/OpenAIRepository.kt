@@ -97,13 +97,33 @@ class OpenAIRepository {
                 Message(
                     role = "system",
                     content = listOf(
-                        Content.Text(text = "Please generate three recipes using the following ingredients: $ingredientsText. Each recipe should be in the following JSON format:\n\n" +
-                                "{\n" +
-                                "  \"name\": \"Recipe Name\",\n" +
-                                "  \"ingredients\": [\"Ingredient 1\", \"Ingredient 2\", ...],\n" +
-                                "  \"instructions\": [\"Step 1\", \"Step 2\", ...]\n" +
-                                "}\n\n" +
-                                "Please ensure the response is strictly formatted as JSON without any additional text outside the JSON format.")
+                        Content.Text(
+                            text = """
+                            Please generate three detailed recipes using the following ingredients: $ingredientsText.
+                            Each recipe should be in the following JSON format, with specific details and approximate times for each step:
+                            
+                            {
+                              "name": "Recipe Name",
+                              "ingredients": [
+                                "List each ingredient with quantity, e.g., '2 cups of flour', '1 tsp salt'"
+                              ],
+                              "instructions": [
+                                {
+                                  "step": "Detailed description of the step, including precise actions (e.g., 'Chop the carrots into 1/2-inch pieces')",
+                                  "approximate_time": "Estimated time for this step in minutes (e.g., '5 minutes')"
+                                },
+                                {
+                                  "step": "Next step with detailed instructions and approximate time"
+                                }
+                              ],
+                              "estimated_total_time": "Total time for the recipe in minutes (e.g., '45 minutes')",
+                              "difficulty": "Level of difficulty (easy, medium, hard)"
+                            }
+                            
+                            Please ensure the response is strictly formatted as JSON without any additional text outside the JSON format.
+                            Each recipe should contain detailed, clear steps with estimated times, a total time for the recipe, and a difficulty level.
+                        """.trimIndent()
+                        )
                     )
                 ),
                 Message(
