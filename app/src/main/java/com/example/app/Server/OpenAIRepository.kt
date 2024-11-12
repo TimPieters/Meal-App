@@ -43,9 +43,9 @@ class OpenAIRepository {
     }
 
     private fun logTokenUsage(response: Response<OpenAIResponse>?) {
-        response?.headers()?.get("x-openai-usage")?.let { usage ->
-            Log.d("OpenAIApp", "Token usage for this call: $usage")
-        } ?: Log.d("OpenAIApp", "Token usage information not available in response headers")
+        response?.body()?.usage?.let { usage ->
+            Log.d("OpenAIApp", "Token usage for this call - Prompt: ${usage.prompt_tokens}, Completion: ${usage.completion_tokens}, Total: ${usage.total_tokens}")
+        } ?: Log.d("OpenAIApp", "Token usage information not available in response")
     }
 
     suspend fun sendImageToOpenAI(apiKey: String, imageUri: Uri, context: Context): Response<OpenAIResponse>? {
