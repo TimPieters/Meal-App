@@ -8,11 +8,17 @@ import com.example.app.SharedViewModel
 import com.example.app.UIUX.screens.CameraScreen
 import com.example.app.UIUX.screens.ImagePreviewScreen
 import com.example.app.UIUX.screens.IngredientScreen
+import com.example.app.UIUX.screens.MealScreen
+import com.example.app.UIUX.screens.RecipeScreen
 
 sealed class Screen(val route: String) {
     object CameraScreen : Screen("camera_screen")
     object ImagePreviewScreen : Screen("image_preview_screen")
     object IngredientScreen : Screen("ingredient_screen") // New route for IngredientScreen
+    object MealScreen : Screen("meal_screen")
+    object RecipeScreen : Screen("recipe_screen/{mealId}") {
+        fun createRoute(mealId: Int) = "recipe_screen/$mealId"
+    }
 }
 
 @Composable
@@ -26,6 +32,11 @@ fun NavGraph(navController: NavHostController, sharedViewModel: SharedViewModel)
         }
         composable(Screen.IngredientScreen.route) {
             IngredientScreen(navController, sharedViewModel) // Pass sharedViewModel to IngredientScreen
+        }
+        composable(Screen.MealScreen.route) { MealScreen(navController, sharedViewModel) }
+        composable(Screen.RecipeScreen.route) { backStackEntry ->
+            val mealId = backStackEntry.arguments?.getString("mealId")?.toInt() ?: -1
+            RecipeScreen(mealId, sharedViewModel)
         }
     }
 }

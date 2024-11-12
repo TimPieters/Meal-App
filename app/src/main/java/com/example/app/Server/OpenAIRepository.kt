@@ -85,6 +85,56 @@ class OpenAIRepository {
         return null
     }
 
+    suspend fun generateRecipes(apiKey: String, ingredients: List<String>): Response<OpenAIResponse> {
+        // Convert the ingredients list into a formatted string
+        val ingredientsText = ingredients.joinToString(", ")
+        // Log the ingredients and setup message
+        Log.d("OpenAIRepository", "Initiating recipe generation with ingredients: $ingredientsText")
+        // Set up the request messages
+        val request = OpenAIChatRequest(
+            model = "gpt-4o-mini",
+            messages = listOf(
+                Message(
+                    role = "system",
+                    content = listOf(
+                        Content.Text(text = "Please generate three recipes using the following ingredients: $ingredientsText. Each recipe should be in the following JSON format:\n\n" +
+                                "{\n" +
+                                "  \"name\": \"Recipe Name\",\n" +
+                                "  \"ingredients\": [\"Ingredient 1\", \"Ingredient 2\", ...],\n" +
+                                "  \"instructions\": [\"Step 1\", \"Step 2\", ...]\n" +
+                                "}\n\n" +
+                                "Please ensure the response is strictly formatted as JSON without any additional text outside the JSON format.")
+                    )
+                ),
+                Message(
+                    role = "user",
+                    content = listOf(Content.Text(text = "Please provide the recipes in the specified JSON format."))
+                )
+            )
+        )
+        Log.d("OpenAIRepository", "Request created with model: ${request.model} and messages: ${request.messages}")
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitInstance.api.getCompletion("Bearer $apiKey", request)
+                if (response.isSuccessful) {
+                    // Log the successful response details
+                    val responseBody = response.body()
+                    Log.d("OpenAIRepository", "Response received successfully.")
+                    Log.d("OpenAIRepository", "Response body: ${responseBody?.choices?.get(0)?.message?.content ?: "No content"}")
+                } else {
+                    // Log detailed error information
+                    Log.e("OpenAIRepository", "Failed response with status code: ${response.code()}")
+                    Log.e("OpenAIRepository", "Error body: ${response.errorBody()?.string() ?: "No error details"}")
+                }
+                response
+            } catch (e: Exception) {
+                // Log any exceptions that occur during the request
+                Log.e("OpenAIRepository", "Exception occurred during API call: ${e.localizedMessage}")
+                throw e // Rethrow the exception to handle it elsewhere if needed
+            }
+        }
+    }
+
     suspend fun sendChatToOpenAI(apiKey: String, content: String): Response<OpenAIResponse> {
         val request = OpenAIChatRequest(
             model = "gpt-4o-mini",

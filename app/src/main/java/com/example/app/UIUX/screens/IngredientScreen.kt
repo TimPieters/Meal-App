@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.app.Navigation.Screen
 import com.example.app.SharedViewModel
 
 @Composable
@@ -113,7 +114,14 @@ fun IngredientScreen(
             // Confirm button positioned at the bottom
             Button(
                 onClick = {
-                    // Navigate to recipe generation screen
+                    val apiKey = ""  // Replace with your actual OpenAI API key
+                    sharedViewModel.generateRecipes(apiKey, ingredients) { success ->
+                        if (success) {
+                            navController.navigate(Screen.MealScreen.route)
+                        } else {
+                            // Handle error (e.g., show a toast or alert)
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
