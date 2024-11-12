@@ -85,7 +85,15 @@ class OpenAIRepository {
         return null
     }
 
-    suspend fun generateRecipes(apiKey: String, ingredients: List<String>): Response<OpenAIResponse> {
+    suspend fun generateRecipes(
+        apiKey: String,
+        ingredients: List<String>,
+        cuisineType: String,
+        mealType: String,
+        difficultyLevel: String,
+        servingSize: Int,
+        nutritionalGoal: String
+    ): Response<OpenAIResponse> {
         // Convert the ingredients list into a formatted string
         val ingredientsText = ingredients.joinToString(", ")
         // Log the ingredients and setup message
@@ -99,11 +107,18 @@ class OpenAIRepository {
                     content = listOf(
                         Content.Text(
                             text = """
-                            Please generate three detailed recipes using the following ingredients: $ingredientsText.
+                            Please generate five detailed recipes using the following ingredients: $ingredientsText.
+                            
+                            The user prefers recipes from the "$cuisineType" cuisine, is looking for "$mealType" ideas, would like recipes for "$servingSize" people, and prefers recipes with a "$difficultyLevel" difficulty level.
+                        
+                            Additionally, the user has a nutritional goal of "$nutritionalGoal" (e.g., high protein, low fat, balanced nutrition). Tailor each recipe to match these dietary preferences, cuisine type, meal type, serving size, difficulty level, and nutritional goals.
+
                             Each recipe should be in the following JSON format, with specific details and approximate times for each step:
                             
                             {
                               "name": "Recipe Name",
+                              "serving_size": "Number of servings, e.g., '4'",
+                              "nutritional_info": "Brief nutritional summary, such as 'High protein, low fat'",
                               "ingredients": [
                                 "List each ingredient with quantity, e.g., '2 cups of flour', '1 tsp salt'"
                               ],

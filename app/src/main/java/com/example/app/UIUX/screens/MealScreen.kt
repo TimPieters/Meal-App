@@ -52,6 +52,8 @@ fun MealScreen(navController: NavHostController, sharedViewModel: SharedViewMode
                 mealName = meal.name,
                 estimatedTime = meal.estimated_total_time,
                 difficulty = meal.difficulty,
+                servingSize = meal.serving_size.toString(),
+                nutritionalSummary = meal.nutritional_info,
                 onClick = { navController.navigate(Screen.RecipeScreen.createRoute(index)) }
             )
         }
@@ -63,6 +65,8 @@ fun MealCard(
     mealName: String,
     estimatedTime: String,
     difficulty: String,
+    servingSize: String,
+    nutritionalSummary: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -100,6 +104,18 @@ fun MealCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Time: $estimatedTime | Difficulty: $difficulty",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Serving Size: $servingSize",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Nutritional Info: $nutritionalSummary",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )

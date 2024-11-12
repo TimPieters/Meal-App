@@ -18,7 +18,9 @@ data class Recipe(
     val ingredients: List<String>,
     val instructions: List<Instruction>, // Use Instruction class for detailed steps
     val estimated_total_time: String,
-    val difficulty: String
+    val difficulty: String,
+    val serving_size: Int,
+    val nutritional_info: String
 )
 
 data class Instruction(
@@ -78,7 +80,7 @@ class SharedViewModel : ViewModel() {
         viewModelScope.launch {
             Log.d("SharedViewModel", "Initiating recipe generation with ingredients: $ingredients")
             try {
-                val response = openAIRepository.generateRecipes(apiKey, ingredients)
+                val response = openAIRepository.generateRecipes(apiKey, ingredients,"Any","Dinner","Easy to Medium",2,"Low calories, high protein")
                 response?.let {
                     if (it.isSuccessful) {
                         val responseBody = it.body()
