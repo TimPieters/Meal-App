@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.app.SharedViewModel
+import com.example.app.UIUX.screens.OnboardingScreen
 import com.example.app.UIUX.screens.CameraScreen
 import com.example.app.UIUX.screens.ImagePreviewScreen
 import com.example.app.UIUX.screens.IngredientScreen
@@ -12,6 +13,7 @@ import com.example.app.UIUX.screens.MealScreen
 import com.example.app.UIUX.screens.RecipeScreen
 
 sealed class Screen(val route: String) {
+    object OnboardingScreen : Screen("onboarding_screen")
     object CameraScreen : Screen("camera_screen")
     object ImagePreviewScreen : Screen("image_preview_screen")
     object IngredientScreen : Screen("ingredient_screen") // New route for IngredientScreen
@@ -23,7 +25,16 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun NavGraph(navController: NavHostController, sharedViewModel: SharedViewModel) {
-    NavHost(navController, startDestination = Screen.CameraScreen.route) {
+    NavHost(navController, startDestination = Screen.OnboardingScreen.route) {
+        composable(Screen.OnboardingScreen.route) {
+            OnboardingScreen(
+                onFinish = {
+                    navController.navigate(Screen.CameraScreen.route) {
+                        popUpTo(Screen.OnboardingScreen.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Screen.CameraScreen.route) {
             CameraScreen(navController)
         }
