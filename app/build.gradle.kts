@@ -79,5 +79,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("com.airbnb.android:lottie:6.6.0")
+    implementation("com.airbnb.android:lottie-compose:6.0.0")   // Lottie Compose dependency
+    implementation("androidx.compose.foundation:foundation:1.6.8")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
 
 }
