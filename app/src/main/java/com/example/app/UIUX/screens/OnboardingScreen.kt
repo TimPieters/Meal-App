@@ -1,6 +1,7 @@
 package com.example.app.UIUX.screens
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,20 +23,23 @@ import com.example.app.R
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit = {}) {
     val pages = listOf(
         OnboardingPage(
-            title = "Take a picture of your fridge",
+            title = "Take a picture of your Fridge",
+            description = "Capture a photo of your fridge so our AI can identify the ingredients.",
             animationRes = R.raw.camera_animation
         ),
         OnboardingPage(
-            title = "Let AI generate meals",
+            title = "Let AI generate Meals",
+            description = "Our AI will create a variety of meal options to make the most out of your ingredients.",
             animationRes = R.raw.generate_meals_animation
         ),
         OnboardingPage(
             title = "Start Cooking!",
+            description = "Follow the step-by-step instructions for a delicious meal, no matter your cooking level.",
             animationRes = R.raw.cooking_animation
         )
     )
@@ -119,7 +123,9 @@ fun OnboardingPageContent(page: OnboardingPage) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 64.dp) // This padding pushes the entire content a bit downward
     ) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(page.animationRes))
         val progress by animateLottieCompositionAsState(
@@ -127,19 +133,32 @@ fun OnboardingPageContent(page: OnboardingPage) {
             iterations = LottieConstants.IterateForever
         )
 
+        // Lottie animation, placed a bit higher on the screen
         LottieAnimation(
             composition = composition,
             progress = progress,
             modifier = Modifier
-                .size(200.dp)
+                .size(300.dp)
                 .padding(bottom = 16.dp)
         )
 
+        // Page title
         Text(
             text = page.title,
-            fontSize = 20.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+
+        // Page description
+        Text(
+            text = page.description,
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(horizontal = 32.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }
 }
@@ -157,13 +176,18 @@ fun IndicatorSingleDot(isSelected: Boolean) {
     )
 }
 
+data class OnboardingPage(
+    val title: String,
+    val description: String,
+    val animationRes: Int
+)
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {
     OnboardingScreen()
 }
 
-data class OnboardingPage(
-    val title: String,
-    val animationRes: Int
-)
+
