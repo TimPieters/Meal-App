@@ -2,6 +2,11 @@ package com.example.app.UIUX.screens
 
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,44 +50,65 @@ fun ImagePreviewScreen(
     val sharedViewModel: SharedViewModel = viewModel(LocalContext.current as ComponentActivity)
     val context = LocalContext.current
     val capturedImageUri by sharedViewModel.capturedImageUri.observeAsState()
+    val isDetectingIngredients by sharedViewModel.isDetectingIngredients.observeAsState(false)
 
-    GradientBackground {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopBar(
-                onBackClicked = { navController.popBackStack() },
-                profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder),
-                onProfileClicked = {}
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            SegmentedProgressBar(currentStep = 1, totalSteps = 3)
-            Spacer(modifier = Modifier.height(12.dp))
+    // Loading Screen
+    AnimatedVisibility(
+        visible = isDetectingIngredients,
+        enter = fadeIn(animationSpec = tween(durationMillis = 700, easing = LinearEasing)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 700, easing = LinearEasing))
+    ) {
+        IngredientLoadingScreen()
+    }
 
-            capturedImageUri?.let { uri ->
-                FramedImage(
-                    imageUri = uri,
-                    contentDescription = "Preview Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+    // Main Content
+    AnimatedVisibility(
+        visible = !isDetectingIngredients,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        GradientBackground {
+            Column(modifier = Modifier.fillMaxSize()) {
+                TopBar(
+                    onBackClicked = { navController.popBackStack() },
+                    profilePicturePainter = painterResource(id = R.drawable.topbarimage_placeholder),
+                    onProfileClicked = {}
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                SegmentedProgressBar(currentStep = 1, totalSteps = 3)
+                Spacer(modifier = Modifier.height(12.dp))
+
+
+                capturedImageUri?.let { uri ->
+                    FramedImage(
+                        imageUri = uri,
+                        contentDescription = "Preview Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                }
+
+                // Submit button that sends the image to OpenAI and navigates to IngredientScreen
+                StandardizedButton(
+                    text = "Submit",
+                    onClick = {
+                        capturedImageUri?.let { uri ->
+                            sharedViewModel.setIsDetectingIngredients(true)
+                            val apiKey =
+                                ""  // Replace with your actual OpenAI API key
+                            openAIViewModel.analyzeImage(apiKey, uri, context) { response ->
+                                // Set detected ingredients in sharedViewModel and navigate
+                                sharedViewModel.setDetectedIngredients(parseIngredients(response))
+                                sharedViewModel.setIsDetectingIngredients(false)
+                                navController.navigate("ingredient_screen")
+                                Log.d("OpenAI Response", response)
+                            }
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-
-            // Submit button that sends the image to OpenAI and navigates to IngredientScreen
-            StandardizedButton(
-                text = "Submit",
-                onClick = {
-                    capturedImageUri?.let { uri ->
-                        val apiKey = ""  // Replace with your actual OpenAI API key
-                        openAIViewModel.analyzeImage(apiKey, uri, context) { response ->
-                            // Set detected ingredients in sharedViewModel and navigate
-                            sharedViewModel.setDetectedIngredients(parseIngredients(response))
-                            navController.navigate("ingredient_screen")
-                            Log.d("OpenAI Response", response)
-                        }
-                    }
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
         }
     }
 }

@@ -37,7 +37,15 @@ class SharedViewModel : ViewModel() {
     private val _ingredients = MutableLiveData<MutableList<String>>(mutableListOf())
     val ingredients: LiveData<MutableList<String>> get() = _ingredients
 
+    private val _isDetectingIngredients = MutableLiveData(false) // New loading state for ingredient detection
+    val isDetectingIngredients: LiveData<Boolean> get() = _isDetectingIngredients
+
     private val openAIRepository = OpenAIRepository()
+
+    fun setIsDetectingIngredients(value: Boolean) {
+        _isDetectingIngredients.value = value
+        Log.d("SharedViewModel", "Is detecting ingredients set to: $value")
+    }
 
     // Set the captured image URI
     fun setImageUri(uri: Uri?) {
@@ -55,14 +63,12 @@ class SharedViewModel : ViewModel() {
             Log.d("SharedViewModel", "Ingredient added: $ingredient")
         }
     }
-
     fun removeIngredient(ingredient: String) {
         _ingredients.value = _ingredients.value?.toMutableList()?.apply {
             remove(ingredient)
             Log.d("SharedViewModel", "Ingredient removed: $ingredient")
         }
     }
-
     fun updateIngredient(oldIngredient: String, newIngredient: String) {
         _ingredients.value = _ingredients.value?.toMutableList()?.apply {
             val index = indexOf(oldIngredient)
