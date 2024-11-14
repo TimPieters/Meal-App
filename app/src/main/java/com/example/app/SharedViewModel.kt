@@ -40,11 +40,20 @@ class SharedViewModel : ViewModel() {
     private val _isDetectingIngredients = MutableLiveData(false) // New loading state for ingredient detection
     val isDetectingIngredients: LiveData<Boolean> get() = _isDetectingIngredients
 
+    // In SharedViewModel.kt
+    private val _isGeneratingRecipes = MutableLiveData(false)
+    val isGeneratingRecipes: LiveData<Boolean> get() = _isGeneratingRecipes
+
     private val openAIRepository = OpenAIRepository()
 
     fun setIsDetectingIngredients(value: Boolean) {
         _isDetectingIngredients.value = value
         Log.d("SharedViewModel", "Is detecting ingredients set to: $value")
+    }
+
+    fun setIsGeneratingRecipes(value: Boolean) {
+        _isGeneratingRecipes.value = value
+        Log.d("SharedViewModel", "Is generating recipes set to: $value")
     }
 
     // Set the captured image URI

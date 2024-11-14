@@ -1,5 +1,10 @@
 package com.example.app.UIUX.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -34,133 +39,153 @@ fun IngredientScreen(
     var showEditDialog by remember { mutableStateOf(false) }
     var ingredientToEdit by remember { mutableStateOf("") }
     var editedIngredient by remember { mutableStateOf("") }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 80.dp) // Ensure button at bottom is visible
+    val isGeneratingRecipes by sharedViewModel.isGeneratingRecipes.observeAsState(false)
+    // Loading Screen
+    AnimatedVisibility(
+        visible = isGeneratingRecipes,
+        enter = fadeIn(animationSpec = tween(durationMillis = 700, easing = LinearEasing)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 700, easing = LinearEasing))
     ) {
-        item {
-            Text(
-                text = "Detected Ingredients",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        items(ingredients.size) { index ->
-            val ingredient = ingredients[index]
-            IngredientCard(
-                ingredient = ingredient,
-                onEditClick = {
-                    ingredientToEdit = ingredient
-                    editedIngredient = ingredient
-                    showEditDialog = true
-                },
-                onDeleteClick = { sharedViewModel.removeIngredient(ingredient) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            // Input field for adding new ingredients
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicTextField(
-                    value = newIngredient,
-                    onValueChange = { newIngredient = it },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                        .background(Color(0xFFF1F1F1), shape = RoundedCornerShape(8.dp))
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    decorationBox = { innerTextField ->
-                        if (newIngredient.isEmpty()) {
-                            Text(
-                                text = "Add a new ingredient...",
-                                color = Color.Gray,
-                                fontSize = 16.sp
-                            )
-                        }
-                        innerTextField()
-                    }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-                        if (newIngredient.isNotBlank()) {
-                            sharedViewModel.addIngredient(newIngredient)
-                            newIngredient = ""
-                        }
-                    },
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Add")
-                }
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            // Confirm button positioned at the bottom
-            Button(
-                onClick = {
-                    val apiKey = ""  // Replace with your actual OpenAI API key
-                    sharedViewModel.generateRecipes(apiKey, ingredients) { success ->
-                        if (success) {
-                            navController.navigate(Screen.MealScreen.route)
-                        } else {
-                            // Handle error (e.g., show a toast or alert)
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-            ) {
-                Text(
-                    text = "Confirm Ingredients",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
+        MealLoadingScreen()
     }
 
-    // Edit ingredient dialog
-    if (showEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDialog = false },
-            title = { Text("Edit Ingredient") },
-            text = {
-                TextField(
-                    value = editedIngredient,
-                    onValueChange = { editedIngredient = it },
-                    placeholder = { Text("Enter new ingredient name") }
+    // Main Content
+    AnimatedVisibility(
+        visible = !isGeneratingRecipes,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 80.dp) // Ensure button at bottom is visible
+        ) {
+            item {
+                Text(
+                    text = "Detected Ingredients",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-            },
-            confirmButton = {
-                Button(onClick = {
-                    sharedViewModel.updateIngredient(ingredientToEdit, editedIngredient)
-                    showEditDialog = false
-                }) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showEditDialog = false }) {
-                    Text("Cancel")
+            }
+            items(ingredients.size) { index ->
+                val ingredient = ingredients[index]
+                IngredientCard(
+                    ingredient = ingredient,
+                    onEditClick = {
+                        ingredientToEdit = ingredient
+                        editedIngredient = ingredient
+                        showEditDialog = true
+                    },
+                    onDeleteClick = { sharedViewModel.removeIngredient(ingredient) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                // Input field for adding new ingredients
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BasicTextField(
+                        value = newIngredient,
+                        onValueChange = { newIngredient = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(8.dp)
+                            .background(Color(0xFFF1F1F1), shape = RoundedCornerShape(8.dp))
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        decorationBox = { innerTextField ->
+                            if (newIngredient.isEmpty()) {
+                                Text(
+                                    text = "Add a new ingredient...",
+                                    color = Color.Gray,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            innerTextField()
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            if (newIngredient.isNotBlank()) {
+                                sharedViewModel.addIngredient(newIngredient)
+                                newIngredient = ""
+                            }
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Add")
+                    }
                 }
             }
-        )
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                // Confirm button positioned at the bottom
+                Button(
+                    onClick = {
+                        val apiKey =
+                            ""  // Replace with your actual OpenAI API key
+                        sharedViewModel.setIsGeneratingRecipes(true)
+                        sharedViewModel.generateRecipes(apiKey, ingredients) { success ->
+                            sharedViewModel.setIsGeneratingRecipes(false)
+                            if (success) {
+                                navController.navigate(Screen.MealScreen.route)
+                            } else {
+                                // Handle error (e.g., show a toast or alert)
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(
+                        text = "Confirm Ingredients",
+                        fontSize = 18.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        // Edit ingredient dialog
+        if (showEditDialog) {
+            AlertDialog(
+                onDismissRequest = { showEditDialog = false },
+                title = { Text("Edit Ingredient") },
+                text = {
+                    TextField(
+                        value = editedIngredient,
+                        onValueChange = { editedIngredient = it },
+                        placeholder = { Text("Enter new ingredient name") }
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        sharedViewModel.updateIngredient(ingredientToEdit, editedIngredient)
+                        showEditDialog = false
+                    }) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showEditDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
 
