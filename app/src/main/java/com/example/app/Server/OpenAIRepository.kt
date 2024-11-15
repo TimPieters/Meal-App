@@ -117,6 +117,7 @@ class OpenAIRepository {
                             
                             {
                               "name": "Recipe Name",
+                              "description": "A 3 sentence description of the meal",
                               "serving_size": "Number of servings, e.g., '4'",
                               "nutritional_info": "Brief nutritional summary, such as 'High protein, low fat'",
                               "ingredients": [

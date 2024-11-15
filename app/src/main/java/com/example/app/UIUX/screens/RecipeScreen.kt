@@ -67,8 +67,16 @@ fun RecipeScreen(mealId: Int, navController: NavHostController, sharedViewModel:
                         Spacer(modifier = Modifier.height(16.dp))
                         // Display BasicInfo at the top of the screen
                         BasicInfo(meal = it)
-                        Divider(thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                         Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    item{
+                        Text(
+                            text = it.description,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Light,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
+                        )
+                        Divider(thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                     }
                     item{
                         // Tab Row for Ingredients and Steps

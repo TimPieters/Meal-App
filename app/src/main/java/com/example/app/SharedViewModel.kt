@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken
 
 data class Recipe(
     val name: String,
+    val description: String,
     val ingredients: List<String>,
     val instructions: List<Instruction>, // Use Instruction class for detailed steps
     val estimated_total_time: String,
