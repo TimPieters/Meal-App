@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -20,6 +21,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.app.Navigation.Screen
+import com.example.app.R
 import com.example.app.SharedViewModel
 
 @Composable
@@ -209,6 +212,24 @@ fun IngredientCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Display the image if available, otherwise show placeholder
+            val imageRes = getImageResourceForIngredient(ingredient)
+            if (imageRes != null) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = ingredient,
+                    modifier = Modifier.size(40.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Delete, // Use a generic icon as a placeholder
+                    contentDescription = "Ingredient Placeholder",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
             Text(text = ingredient, fontSize = 18.sp)
             Row {
                 IconButton(onClick = onDeleteClick) {
@@ -228,5 +249,79 @@ fun IngredientCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun getImageResourceForIngredient(ingredient: String): Int? {
+    return when (ingredient.lowercase()) {
+        // Cooking stuff
+        "salt" -> R.drawable.salt
+        "pepper" -> R.drawable.salt
+        "olive oil" -> R.drawable.olive_oil
+        "garlic" -> R.drawable.garlic
+        "butter" -> R.drawable.butter
+
+        // Dry
+        "pasta","penne","tagliatelle","gnocchi" -> R.drawable.pasta
+        "rice" -> R.drawable.rice
+        "seeds", "sesame seeds", "chia seeds", "sunflower seeds", "pumpkin seeds" -> R.drawable.seeds
+        "tortilla","tortillas" -> R.drawable.tortillas
+        "nuts","almonds","peanuts" -> R.drawable.nuts
+        "flour" -> R.drawable.flour
+        "sugar" -> R.drawable.sugar
+
+        // Dairy
+        "cheese" -> R.drawable.cheese
+        "milk" -> R.drawable.milk
+        "yogurt","yoghurt" -> R.drawable.yoghurt
+        "cream cheese" -> R.drawable.cream_cheese
+
+        // Sauce
+        "ketchup","mayonnaise","mustard" -> R.drawable.sauces
+        "maple syrup" -> R.drawable.maple_syrup
+        "tomato sauce" -> R.drawable.tomato_sauce
+        "soy sauce" -> R.drawable.soy_sauce
+        "pesto","pesto sauce" -> R.drawable.pesto
+
+        // Other
+        "egg","eggs" -> R.drawable.egg
+        "honey" -> R.drawable.honey
+        "chocolate" -> R.drawable.chocolate
+
+        // Vegetables
+        "onion","onions" -> R.drawable.onion
+        "tomato","tomatoes" -> R.drawable.tomato
+        "potato","potatoes" -> R.drawable.potato
+        "carrot","carrots" -> R.drawable.carrot
+        "cabbage","lettuce" -> R.drawable.cabbage
+        "red cabbage" -> R.drawable.red_cabbage
+        "cauliflower" -> R.drawable.cauliflower
+        "green beans" -> R.drawable.green_beans
+        "asparagus" -> R.drawable.asparagus
+        "brussels sprouts","sprouts" -> R.drawable.brussels_sprouts
+        "artichoke" -> R.drawable.artichoke
+        "mushroom","mushrooms" -> R.drawable.mushrooms
+        "eggplant" -> R.drawable.eggplant
+        "broccoli" -> R.drawable.broccoli
+        "bell pepper","bellpepper", "bell peppers", "red pepper", "red peppers", "green pepper", "green peppers", "yellow pepper", "yellow peppers", "red bell pepper", "green bell pepper","yellow bell pepper" -> R.drawable.bell_pepper
+        "cucumber","cucumbers" -> R.drawable.cucumber
+        "pickle","pickles" -> R.drawable.pickle
+        "leafy greens","greens","spinach","arugula" -> R.drawable.greens
+        "basil","cilantro","mint" -> R.drawable.basil
+
+        // Fruit
+        "lime","limes" -> R.drawable.lime
+        "lemon","lemons" -> R.drawable.lemon
+        "pear","pears" -> R.drawable.pear
+        "orange","oranges" -> R.drawable.orange
+        "apple","apples","green apples" -> R.drawable.apple
+        "banana","bananas" -> R.drawable.banana
+        "date","dates","dried dates" -> R.drawable.dates
+        "strawberry","strawberries" -> R.drawable.strawberry
+
+        // Meat
+        "chicken breast", "chicken", "meat", "steak","pork meat", "lambchops", "fish" -> R.drawable.meat
+        else -> R.drawable.ingredients
     }
 }

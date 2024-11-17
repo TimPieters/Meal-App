@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,16 +48,21 @@ fun MealScreen(navController: NavHostController, sharedViewModel: SharedViewMode
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        meals.forEachIndexed { index, meal ->
-            MealCard(
-                mealName = meal.name,
-                estimatedTime = meal.estimated_total_time,
-                difficulty = meal.difficulty,
-                servingSize = meal.serving_size.toString(),
-                nutritionalSummary = meal.nutritional_info,
-                onClick = { navController.navigate(Screen.RecipeScreen.createRoute(index)) }
-            )
+        LazyColumn(modifier = Modifier.fillMaxSize()){
+            item{
+                meals.forEachIndexed { index, meal ->
+                    MealCard(
+                        mealName = meal.name,
+                        estimatedTime = meal.estimated_total_time,
+                        difficulty = meal.difficulty,
+                        servingSize = meal.serving_size.toString(),
+                        nutritionalSummary = meal.nutritional_info,
+                        onClick = { navController.navigate(Screen.RecipeScreen.createRoute(index)) }
+                    )
+                }
+            }
         }
+
     }
 }
 
