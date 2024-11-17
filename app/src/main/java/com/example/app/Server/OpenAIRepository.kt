@@ -50,7 +50,7 @@ class OpenAIRepository {
 
     suspend fun sendImageToOpenAI(apiKey: String, imageUri: Uri, context: Context): Response<OpenAIResponse>? {
         // Reference a stock image for testing
-        val image = Uri.parse("android.resource://com.example.app/drawable/stock_fridge")
+        val image = Uri.parse("android.resource://com.example.app/drawable/stock_fridge3")
 
         // Log the image aspect ratio
         logImageAspectRatio(context, image )
@@ -67,7 +67,8 @@ class OpenAIRepository {
                         """
                             Your task is to extract a **list of cooking ingredients** from a provided fridge image.
                             These ingredients will be used by a large language model to generate recipes, so please make them as accurate as possible.
-                            Do not include things you are not certain about. (e.g. "Pasta Sauce")
+                            You always try to name as much ingredients as possible. 
+                            Look for fruits, vegetables, dairy, meat, sauces.
                             
                             Follow these rules strictly:
                             - **Separate all ingredients with commas**.

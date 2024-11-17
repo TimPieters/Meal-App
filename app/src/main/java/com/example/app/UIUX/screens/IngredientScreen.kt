@@ -257,7 +257,7 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
     return when (ingredient.lowercase()) {
         // Cooking stuff
         "salt" -> R.drawable.salt
-        "pepper" -> R.drawable.salt
+        "pepper" -> R.drawable.pepper
         "olive oil" -> R.drawable.olive_oil
         "garlic" -> R.drawable.garlic
         "butter" -> R.drawable.butter
@@ -265,9 +265,9 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
         // Dry
         "pasta","penne","tagliatelle","gnocchi","tortellini" -> R.drawable.pasta
         "rice" -> R.drawable.rice
-        "seeds", "sesame seeds", "chia seeds", "sunflower seeds", "pumpkin seeds" -> R.drawable.seeds
+        "seeds", "sesame seeds", "chia seeds", "sunflower seed", "sunflower seeds", "pumpkin seeds" -> R.drawable.seeds
         "tortilla","tortillas" -> R.drawable.tortillas
-        "nuts","almonds","peanuts" -> R.drawable.nuts
+        "nuts","almond","almonds","peanut","peanuts" -> R.drawable.nuts
         "flour" -> R.drawable.flour
         "sugar" -> R.drawable.sugar
         "oat", "oats", "quick oats", "instant oats", "rolled oats", "granola" -> R.drawable.oat
@@ -292,6 +292,8 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
         "egg","eggs" -> R.drawable.egg
         "honey" -> R.drawable.honey
         "chocolate" -> R.drawable.chocolate
+        "almond milk" -> R.drawable.almond_milk
+        "orange juice", "tomato juice", "grapefruit juice", "juice" -> R.drawable.juice
 
         // Vegetables
         "onion","onions" -> R.drawable.onion
@@ -308,12 +310,13 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
         "mushroom","mushrooms" -> R.drawable.mushrooms
         "eggplant" -> R.drawable.eggplant
         "broccoli" -> R.drawable.broccoli
-        "bell pepper","bellpepper", "bell peppers", "red pepper", "red peppers", "green pepper", "green peppers", "yellow pepper", "yellow peppers", "red bell pepper", "green bell pepper","yellow bell pepper", "orange bell pepper" -> R.drawable.bell_pepper
+        "peppers","bell pepper","bellpepper", "bell peppers", "red pepper", "red peppers", "green pepper", "green peppers", "yellow pepper", "yellow peppers", "red bell pepper", "green bell pepper","yellow bell pepper", "orange bell pepper" -> R.drawable.bell_pepper
         "cucumber","cucumbers" -> R.drawable.cucumber
         "pickle","pickles" -> R.drawable.pickle
-        "leafy greens", "mixed greens","salad greens","greens","spinach","arugula" -> R.drawable.greens
-        "basil","cilantro","mint" -> R.drawable.basil
-        "olive","olives" ->R.drawable.olive
+        "leafy greens", "mixed greens","salad greens","greens","spinach","arugula","celery" -> R.drawable.greens
+        "basil","cilantro","mint","parsley" -> R.drawable.basil
+        "olive","olives" -> R.drawable.olive
+        "radish","radishes" -> R.drawable.radish
 
         // Fruit
         "lime","limes" -> R.drawable.lime
@@ -329,6 +332,8 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
         "grapefruit" -> R.drawable.grapefruit
 
         // Meat
+        "sausage" -> R.drawable.sausage
+        "ham" -> R.drawable.ham
         "chicken breast", "chicken", "meat", "steak","pork meat", "lambchops", "fish" -> R.drawable.meat
         else -> R.drawable.ingredients
     }
