@@ -59,11 +59,25 @@ class OpenAIRepository {
         base64Image?.let {
             val imageData = ImageData(url = "data:image/jpeg;base64,$it")
             val request = OpenAIChatRequest(
-                model = "gpt-4o-mini",
+                model = "gpt-4o",
                 messages = listOf(
                     Message(
                         role = "system",
-                        content = listOf(Content.Text(text = "Give a list of ingredients seen in a fridge image that can be used for cooking. You always seperate it with a comma delimiter. The first letter of the word should always be capitalized."
+                        content = listOf(Content.Text(text =
+                        """
+                            Your task is to extract a **list of cooking ingredients** from a provided fridge image.
+                            These ingredients will be used by a large language model to generate recipes, so please make them as accurate as possible.
+                            Do not include things you are not certain about. (e.g. "Pasta Sauce")
+                            
+                            Follow these rules strictly:
+                            - **Separate all ingredients with commas**.
+                            - **Capitalize the first letter** of each ingredient name.
+                            - Do **not** add any trailing punctuation like periods, exclamation marks, etc.
+                            - If an ingredient is detected multiple times, **list it only once**.
+                            - Do **not** mention brand names.
+                            - Use **common, standardized ingredient names** (e.g., "Cherry Tomato" -> "Tomato", "Dijon Mustard" -> "Mustard", "Penne" -> "Pasta", unless the distinction is clear and important).
+                            - Return only the **list of ingredients** in a single-line format. Do not include any extra commentary or text outside the list.
+                            """
                         ))
                     ),
                     Message(
