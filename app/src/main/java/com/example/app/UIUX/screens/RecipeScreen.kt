@@ -27,12 +27,16 @@ import com.example.app.R
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -333,6 +337,7 @@ fun InfoColumn(
 
 @Composable
 fun CookAlongSection(onClick: () -> Unit) {
+    var isVisible by remember { mutableStateOf(false) } // Track visibility state
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -348,6 +353,13 @@ fun CookAlongSection(onClick: () -> Unit) {
             )
             .clip(MaterialTheme.shapes.medium)
             .padding(16.dp)
+            .onGloballyPositioned { layoutCoordinates ->
+                isVisible = layoutCoordinates.parentLayoutCoordinates?.let {
+                    val parentBounds = it.boundsInWindow()
+                    val childBounds = layoutCoordinates.boundsInWindow()
+                    parentBounds.overlaps(childBounds)
+                } ?: false
+            }
     ) {
         Column(
             modifier = Modifier
@@ -355,19 +367,20 @@ fun CookAlongSection(onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Lottie Animation
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.generate_meals_animation)) // Replace with actual animation file
-            val progress by animateLottieCompositionAsState(
-                composition,
-                iterations = LottieConstants.IterateForever
-            )
+            // Conditionally display LottieAnimation when visible
+            if (isVisible) {
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.chef_cooking_animation))
+                val progress by animateLottieCompositionAsState(
+                    composition = composition,
+                    iterations = 1 // Play animation once
+                )
 
-            LottieAnimation(
-                composition = composition,
-                progress = progress,
-                modifier = Modifier.size(200.dp)
-            )
-
+                LottieAnimation(
+                    composition = composition,
+                    progress = progress,
+                    modifier = Modifier.size(140.dp)
+                )
+            }
             // Title
             Text(
                 text = "Cook Along Mode",
@@ -376,7 +389,6 @@ fun CookAlongSection(onClick: () -> Unit) {
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-
             // Description
             Text(
                 text = "Make cooking fun and interactive! Follow step-by-step instructions with animations for every step.",
@@ -385,7 +397,6 @@ fun CookAlongSection(onClick: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-
             // Action Button
             Button(
                 onClick = onClick,
@@ -407,6 +418,26 @@ fun CookAlongSection(onClick: () -> Unit) {
         }
     }
 }
+
+/**
+ * is an extension function for Modifier.
+ * It allows you to attach visibility detection logic to any composable element
+ */
+private fun Modifier.isElementVisible(onVisibilityChanged: (Boolean) -> Unit) = composed {
+    val isVisible by remember { derivedStateOf { mutableStateOf(false) } }
+    LaunchedEffect(isVisible.value) { onVisibilityChanged.invoke(isVisible.value) }
+    this.onGloballyPositioned { layoutCoordinates ->
+        isVisible.value = layoutCoordinates.parentLayoutCoordinates?.let {
+            val parentBounds = it.boundsInWindow()
+            val childBounds = layoutCoordinates.boundsInWindow()
+            parentBounds.overlaps(childBounds)
+        } ?: false
+    }
+}
+
+
+
+
 
 class PreviewSharedViewModel : SharedViewModel() {
     init {
