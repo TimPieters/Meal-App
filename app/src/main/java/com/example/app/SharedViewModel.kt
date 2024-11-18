@@ -30,7 +30,15 @@ data class Instruction(
 )
 
 
-class SharedViewModel : ViewModel() {
+open class SharedViewModel(
+    initialRecipes: List<Recipe> = emptyList() // Default to an empty list
+) : ViewModel() {
+    private val _generatedRecipes = MutableLiveData(initialRecipes)
+    val generatedRecipes: LiveData<List<Recipe>> get() = _generatedRecipes
+    fun setGeneratedRecipes(recipes: List<Recipe>) {
+        _generatedRecipes.value = recipes
+    }
+
     private val _capturedImageUri = MutableLiveData<Uri?>()
     val capturedImageUri: LiveData<Uri?> = _capturedImageUri
 
@@ -38,7 +46,8 @@ class SharedViewModel : ViewModel() {
     private val _ingredients = MutableLiveData<MutableList<String>>(mutableListOf())
     val ingredients: LiveData<MutableList<String>> get() = _ingredients
 
-    private val _isDetectingIngredients = MutableLiveData(false) // New loading state for ingredient detection
+    private val _isDetectingIngredients =
+        MutableLiveData(false) // New loading state for ingredient detection
     val isDetectingIngredients: LiveData<Boolean> get() = _isDetectingIngredients
 
     // In SharedViewModel.kt
@@ -62,23 +71,27 @@ class SharedViewModel : ViewModel() {
         Log.d("SharedViewModel", "Image URI set: $uri")
         _capturedImageUri.value = uri
     }
+
     // Set the initial list of detected ingredients from AI response
     fun setDetectedIngredients(ingredientList: List<String>) {
         _ingredients.value = ingredientList.toMutableList()
         Log.d("SharedViewModel", "Detected ingredients set: $ingredientList")
     }
+
     fun addIngredient(ingredient: String) {
         _ingredients.value = _ingredients.value?.toMutableList()?.apply {
             add(ingredient)
             Log.d("SharedViewModel", "Ingredient added: $ingredient")
         }
     }
+
     fun removeIngredient(ingredient: String) {
         _ingredients.value = _ingredients.value?.toMutableList()?.apply {
             remove(ingredient)
             Log.d("SharedViewModel", "Ingredient removed: $ingredient")
         }
     }
+
     fun updateIngredient(oldIngredient: String, newIngredient: String) {
         _ingredients.value = _ingredients.value?.toMutableList()?.apply {
             val index = indexOf(oldIngredient)
@@ -89,28 +102,40 @@ class SharedViewModel : ViewModel() {
         Log.d("SharedViewModel", "Ingredient updated: $oldIngredient -> $newIngredient")
     }
 
-    private val _generatedRecipes = MutableLiveData<List<Recipe>>() // Updated to List<Recipe>
-    val generatedRecipes: LiveData<List<Recipe>> get() = _generatedRecipes
 
     fun generateRecipes(apiKey: String, ingredients: List<String>, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             Log.d("SharedViewModel", "Initiating recipe generation with ingredients: $ingredients")
             try {
-                val response = openAIRepository.generateRecipes(apiKey, ingredients,"Any","Dinner","Easy to Medium",2,"Low calories, high protein")
+                val response = openAIRepository.generateRecipes(
+                    apiKey,
+                    ingredients,
+                    "Any",
+                    "Dinner",
+                    "Easy to Medium",
+                    2,
+                    "Low calories, high protein"
+                )
                 response?.let {
                     if (it.isSuccessful) {
                         val responseBody = it.body()
                         val responseText = responseBody?.choices?.get(0)?.message?.content ?: ""
                         val recipes = parseRecipes(responseText)
                         _generatedRecipes.value = recipes // Set as List<Recipe>
-                        Log.d("SharedViewModel", "Recipes generated successfully. Total recipes: ${recipes.size}")
+                        Log.d(
+                            "SharedViewModel",
+                            "Recipes generated successfully. Total recipes: ${recipes.size}"
+                        )
                         recipes.forEachIndexed { index, recipe ->
                             Log.d("SharedViewModel", "Recipe $index: ${recipe.name}")
                         }
                         onResult(true)
                     } else {
                         Log.e("SharedViewModel", "Failed with status code: ${it.code()}")
-                        Log.e("SharedViewModel", "Error details: ${it.errorBody()?.string() ?: "No error body"}")
+                        Log.e(
+                            "SharedViewModel",
+                            "Error details: ${it.errorBody()?.string() ?: "No error body"}"
+                        )
                         onResult(false)
                     }
                 } ?: run {
@@ -118,11 +143,15 @@ class SharedViewModel : ViewModel() {
                     onResult(false)
                 }
             } catch (e: Exception) {
-                Log.e("SharedViewModel", "Exception during recipe generation: ${e.localizedMessage}")
+                Log.e(
+                    "SharedViewModel",
+                    "Exception during recipe generation: ${e.localizedMessage}"
+                )
                 onResult(false)
             }
         }
     }
+
     private fun parseRecipes(responseText: String): List<Recipe> {
         val cleanedText = responseText
             .trim()
@@ -137,5 +166,9 @@ class SharedViewModel : ViewModel() {
             emptyList()
         }
     }
-
 }
+
+
+
+
+

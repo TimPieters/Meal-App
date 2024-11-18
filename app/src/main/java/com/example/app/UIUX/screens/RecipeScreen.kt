@@ -27,6 +27,7 @@ import com.example.app.R
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -34,7 +35,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.app.Instruction
 import com.example.app.Recipe
 import kotlin.math.max
@@ -70,6 +80,7 @@ fun Content(meal: Recipe, scrollState: LazyListState) {
                 Description(meal.description)
                 Spacer(modifier = Modifier.height(16.dp))
                 TabSection(meal)
+                CookAlongSection(onClick = {})
             }
         }
     }
@@ -319,4 +330,122 @@ fun InfoColumn(
         Text(text = label, color = Color.Gray, fontSize = 12.sp)
     }
 }
+
+@Composable
+fun CookAlongSection(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                        Color.Transparent
+                    )
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
+            .clip(MaterialTheme.shapes.medium)
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Lottie Animation
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.generate_meals_animation)) // Replace with actual animation file
+            val progress by animateLottieCompositionAsState(
+                composition,
+                iterations = LottieConstants.IterateForever
+            )
+
+            LottieAnimation(
+                composition = composition,
+                progress = progress,
+                modifier = Modifier.size(200.dp)
+            )
+
+            // Title
+            Text(
+                text = "Cook Along Mode",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Description
+            Text(
+                text = "Make cooking fun and interactive! Follow step-by-step instructions with animations for every step.",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            )
+
+            // Action Button
+            Button(
+                onClick = onClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    text = "Start Now",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+class PreviewSharedViewModel : SharedViewModel() {
+    init {
+        setGeneratedRecipes(
+            listOf(
+                Recipe(
+                    name = "Cheesy Sausage and Vegetable Bake",
+                    description = "Packed with flavor and nutrition, this recipe combines fresh vegetables, gooey cheese, and hearty sausages. Perfect for a quick dinner!",
+                    ingredients = listOf("2 Sausages", "1 Bell Pepper", "100g Broccoli", "50g Cheese", "1 tsp Olive Oil"),
+                    instructions = listOf(
+                        Instruction("Preheat the oven to 200°C.", "5 mins"),
+                        Instruction("Chop all vegetables into bite-sized pieces.", "10 mins"),
+                        Instruction("Mix sausages, vegetables, and olive oil in a baking tray.", "5 mins"),
+                        Instruction("Bake in the oven for 30 minutes until golden brown.", "30 mins")
+                    ),
+                    estimated_total_time = "45 minutes",
+                    difficulty = "Easy",
+                    serving_size = 4,
+                    nutritional_info = "350 kcal per serving"
+                )
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+fun RecipeScreenPreview() {
+    // Mock NavHostController
+    val mockNavController = rememberNavController()
+    // Use PreviewSharedViewModel with mock data
+    val sharedViewModel = PreviewSharedViewModel()
+    RecipeScreen(
+        mealId = 0, // Assuming the first recipe in the mock list has ID 0
+        navController = mockNavController,
+        sharedViewModel = sharedViewModel
+    )
+}
+
+
+
 
