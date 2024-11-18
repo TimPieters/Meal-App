@@ -91,7 +91,7 @@ fun MealCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.stock_fridge),  // Replace with an actual image resource if available
+                painter = painterResource(id = R.drawable.dish),  // Replace with an actual image resource if available
                 contentDescription = "Meal Image",
                 modifier = Modifier
                     .size(64.dp)
@@ -105,7 +105,7 @@ fun MealCard(
                     text = mealName,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
+                    maxLines = 3
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
