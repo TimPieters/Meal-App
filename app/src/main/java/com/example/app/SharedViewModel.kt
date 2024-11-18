@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken
 data class Recipe(
     val name: String,
     val description: String,
-    val ingredients: List<String>,
+    val ingredients: List<Ingredient>,
     val instructions: List<Instruction>, // Use Instruction class for detailed steps
     val estimated_total_time: String,
     val difficulty: String,
@@ -29,6 +29,10 @@ data class Instruction(
     val approximate_time: String
 )
 
+data class Ingredient(
+    val name: String,
+    val quantity: String
+)
 
 open class SharedViewModel(
     initialRecipes: List<Recipe> = emptyList() // Default to an empty list

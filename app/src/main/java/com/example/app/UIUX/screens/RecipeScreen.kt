@@ -49,6 +49,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.app.Ingredient
 import com.example.app.Instruction
 import com.example.app.Recipe
 import kotlin.math.max
@@ -131,7 +132,7 @@ fun TabSection(meal: Recipe) {
 }
 
 @Composable
-fun IngredientsList(ingredients: List<String>) {
+fun IngredientsList(ingredients: List<Ingredient>) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = "Ingredients",
@@ -141,7 +142,7 @@ fun IngredientsList(ingredients: List<String>) {
         )
         ingredients.forEach { ingredient ->
             Text(
-                text = "- $ingredient",
+                text = "- ${ingredient.quantity} ${ingredient.name}",
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal = 16.dp,vertical = 4.dp)
             )
@@ -446,7 +447,12 @@ class PreviewSharedViewModel : SharedViewModel() {
                 Recipe(
                     name = "Cheesy Sausage and Vegetable Bake",
                     description = "Packed with flavor and nutrition, this recipe combines fresh vegetables, gooey cheese, and hearty sausages. Perfect for a quick dinner!",
-                    ingredients = listOf("2 Sausages", "1 Bell Pepper", "100g Broccoli", "50g Cheese", "1 tsp Olive Oil"),
+                    ingredients = listOf(
+                        Ingredient("Sausages", "2"),
+                        Ingredient("Bell Pepper","1"),
+                        Ingredient("Broccoli","100g"),
+                        Ingredient("Cheese","50g"),
+                        Ingredient("Olive Oil","1tsp")),
                     instructions = listOf(
                         Instruction("Preheat the oven to 200°C.", "5 mins"),
                         Instruction("Chop all vegetables into bite-sized pieces.", "10 mins"),

@@ -136,7 +136,9 @@ class OpenAIRepository {
                               "serving_size": "Number of servings, e.g., '4'",
                               "nutritional_info": "Brief nutritional summary, such as 'High protein, low fat'",
                               "ingredients": [
-                                "List each ingredient with quantity, e.g., '2 cups of flour', '1 tsp salt'"
+                              {"name": Name of the ingredient (e.g. Flour, Salt, Onion,...),
+                              "quantity": Quantity of each ingredient (e.g., '2 cups', '1 tsp')"
+                                },
                               ],
                               "instructions": [
                                 {
