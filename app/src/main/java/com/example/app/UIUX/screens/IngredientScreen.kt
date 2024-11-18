@@ -253,7 +253,7 @@ fun IngredientCard(
 }
 
 @Composable
-fun getImageResourceForIngredient(ingredient: String): Int? {
+fun getImageResourceForIngredient(ingredient: String): Int {
     return when (ingredient.lowercase()) {
         // Cooking stuff
         "salt" -> R.drawable.salt
@@ -332,7 +332,7 @@ fun getImageResourceForIngredient(ingredient: String): Int? {
         "grapefruit" -> R.drawable.grapefruit
 
         // Meat
-        "sausage" -> R.drawable.sausage
+        "sausage", "sausages" -> R.drawable.sausage
         "ham" -> R.drawable.ham
         "chicken breast", "chicken", "meat", "steak","pork meat", "lambchops", "fish" -> R.drawable.meat
         else -> R.drawable.ingredients

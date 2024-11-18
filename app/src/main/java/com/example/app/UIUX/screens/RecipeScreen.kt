@@ -32,6 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
@@ -39,6 +42,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.font.FontWeight.Companion.Medium
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -125,7 +129,7 @@ fun TabSection(meal: Recipe) {
 
         // Tab Content
         when (selectedTab) {
-            "Ingredients" -> IngredientsList(meal.ingredients)
+            "Ingredients" -> IngredientsGrid(meal)
             "Steps" -> StepsList(meal.instructions)
         }
     }
@@ -147,6 +151,72 @@ fun IngredientsList(ingredients: List<Ingredient>) {
                 modifier = Modifier.padding(horizontal = 16.dp,vertical = 4.dp)
             )
         }
+    }
+}
+
+@Composable
+fun IngredientsGrid(recipe: Recipe) {
+    EasyGrid(nColumns = 3, items = recipe.ingredients) {
+        IngredientCard(getImageResourceForIngredient(it.name), it.name, it.quantity, Modifier)
+    }
+
+}
+
+@Composable
+fun <T> EasyGrid(nColumns: Int, items: List<T>, content: @Composable (T) -> Unit) {
+    Column(Modifier.padding(16.dp)) {
+        for (i in items.indices step nColumns) {
+            Row {
+                for (j in 0 until nColumns) {
+                    if (i + j < items.size) {
+                        Box(
+                            contentAlignment = Alignment.TopCenter,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            content(items[i + j])
+                        }
+                    } else {
+                        Spacer(Modifier.weight(1f, fill = true))
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun IngredientCard(
+    @DrawableRes iconResource: Int,
+    name: String,
+    quantity: String,
+    modifier: Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(bottom = 16.dp)
+    ) {
+        Card(
+            shape = CardDefaults.shape,
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+            modifier = Modifier
+                .width(100.dp)
+                .height(100.dp)
+                .padding(bottom = 8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = iconResource),
+                contentDescription = null,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        Text(text = name, modifier = Modifier.width(100.dp), fontSize = 14.sp, fontWeight = Medium)
+        Text(text = quantity, color = DarkGray, modifier = Modifier.width(100.dp), fontSize = 14.sp)
     }
 }
 
@@ -419,25 +489,6 @@ fun CookAlongSection(onClick: () -> Unit) {
         }
     }
 }
-
-/**
- * is an extension function for Modifier.
- * It allows you to attach visibility detection logic to any composable element
- */
-private fun Modifier.isElementVisible(onVisibilityChanged: (Boolean) -> Unit) = composed {
-    val isVisible by remember { derivedStateOf { mutableStateOf(false) } }
-    LaunchedEffect(isVisible.value) { onVisibilityChanged.invoke(isVisible.value) }
-    this.onGloballyPositioned { layoutCoordinates ->
-        isVisible.value = layoutCoordinates.parentLayoutCoordinates?.let {
-            val parentBounds = it.boundsInWindow()
-            val childBounds = layoutCoordinates.boundsInWindow()
-            parentBounds.overlaps(childBounds)
-        } ?: false
-    }
-}
-
-
-
 
 
 class PreviewSharedViewModel : SharedViewModel() {
