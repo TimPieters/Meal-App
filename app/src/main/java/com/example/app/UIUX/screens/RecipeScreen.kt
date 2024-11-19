@@ -238,13 +238,13 @@ fun StepsList(instructions: List<Instruction>) {
                 Text(
                     text = "Step ${index + 1}: ${instruction.step}",
                     fontSize = 16.sp,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                 )
                 Text(
                     text = "Approximate Time: ${instruction.approximate_time}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp, start = 16.dp)
                 )
             }
         }
