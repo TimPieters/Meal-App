@@ -1,21 +1,30 @@
 package com.example.app.UIUX.screens
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,12 +37,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -102,9 +119,18 @@ fun CookAlongScreen(instructions: List<Instruction>, onBack: () -> Unit) {
 
 @Composable
 fun CookAlongStep(instruction: Instruction, pageNumber: Int, totalSteps: Int) {
-    val totalTime = extractTimeInSeconds(instruction.step) // Extract time in seconds
-    val timerState = remember { mutableStateOf(totalTime) } // Initialize timer state
-    val isTimerVisible = totalTime > 0 // Show timer only if time is specified
+    val totalTime = extractTimeInSeconds(instruction.step) // Extract total time from the instruction
+    val timerState = remember { mutableStateOf(totalTime) }
+    val isRunning = remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRunning.value) {
+        if (isRunning.value) {
+            while (timerState.value > 0 && isRunning.value) {
+                delay(1000L) // Decrement every second
+                timerState.value -= 1
+            }
+        }
+    }
 
     val animation = getAnimationForStep(instruction.step) // Fetch animation based on step content
 
@@ -112,15 +138,15 @@ fun CookAlongStep(instruction: Instruction, pageNumber: Int, totalSteps: Int) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         // Lottie Animation
         animation?.let {
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(it))
             val progress by animateLottieCompositionAsState(
                 composition = composition,
-                iterations = IterateForever
+                iterations = LottieConstants.IterateForever
             )
 
             LottieAnimation(
@@ -139,11 +165,12 @@ fun CookAlongStep(instruction: Instruction, pageNumber: Int, totalSteps: Int) {
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        // Timer (if applicable)
-        if (isTimerVisible) {
+        // Timer UI
+        if (totalTime > 0) {
             TimerUI(
                 totalTime = totalTime,
-                timerState = timerState
+                timerState = timerState,
+                isRunning = isRunning
             )
         }
 
@@ -159,53 +186,156 @@ fun CookAlongStep(instruction: Instruction, pageNumber: Int, totalSteps: Int) {
 }
 
 
+
 @Composable
-fun TimerUI(totalTime: Long, timerState: MutableState<Long>) {
-    val isRunning = remember { mutableStateOf(false) } // Timer running state
+fun TimerUI(totalTime: Long, timerState: MutableState<Long>, isRunning: MutableState<Boolean>) {
+    val progress = timerState.value.toFloat() / totalTime // Progress (0 to 1)
 
-    // Initialize the timer with the total time
-    LaunchedEffect(totalTime) {
-        timerState.value = totalTime
-    }
+    // Countdown Indicator with Time
+    CountDownIndicator(
+        progress = progress,
+        time = formatTime(timerState.value), // Pass formatted time
+        size = 180, // Circle size
+        stroke = 12 // Circle stroke width
+    )
 
-    // Timer Logic: Count down every second when running
-    LaunchedEffect(isRunning.value) {
-        if (isRunning.value) {
-            while (timerState.value > 0 && isRunning.value) {
-                kotlinx.coroutines.delay(1000L)
-                timerState.value -= 1
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Play/Stop Button
+    CountDownButton(
+        isPlaying = isRunning.value,
+        optionSelected = {
+            isRunning.value = !isRunning.value // Toggle play/pause
+            if (!isRunning.value) {
+                // Reset timer if stopped
+                timerState.value = totalTime
             }
         }
-    }
+    )
+}
 
-    // Display Timer
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "Time Remaining: ${formatTime(timerState.value)}",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
 
-        // Timer Controls
-        Row(horizontalArrangement = Arrangement.Center) {
-            Button(onClick = { isRunning.value = true }) {
-                Text("Start")
+
+@Composable
+fun CountDownButton(
+    modifier: Modifier = Modifier,
+    isPlaying: Boolean,
+    optionSelected: () -> Unit
+) {
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = 90.dp)
+    ) {
+
+        Button(
+            onClick = {
+                optionSelected()
+            },
+            modifier =
+            Modifier
+                .height(70.dp)
+                .width(200.dp),
+
+            shape = RoundedCornerShape(25.dp),
+
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.purple_200),
+                contentColor = colorResource(id = R.color.white),
+            ),
+
+            ) {
+            val pair = if (!isPlaying) {
+                "START"
+            } else {
+                "STOP"
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { isRunning.value = false }) {
-                Text("Pause")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = {
-                isRunning.value = false
-                timerState.value = totalTime
-            }) {
-                Text("Reset")
-            }
+
+            Text(
+                pair,
+                fontSize = 20.sp,
+                color = Color.White,
+            )
         }
     }
 }
+
+@Composable
+fun CountDownIndicator(
+    progress: Float,
+    time: String,
+    size: Int,
+    stroke: Int
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    )
+
+    // Ensure the progress circle and time are displayed properly
+    Box(
+        contentAlignment = Alignment.Center, // Ensures time is centered
+        modifier = Modifier
+            .size(size.dp) // Circular timer size
+    ) {
+        // Background Circle
+        CircularProgressIndicatorBackGround(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.LightGray, // Background circle color
+            stroke = stroke
+        )
+
+        // Foreground Progress Circle
+        CircularProgressIndicator(
+            progress = animatedProgress,
+            modifier = Modifier.fillMaxSize(),
+            color = Color(0xFFFF7043), // Foreground progress color
+            strokeWidth = stroke.dp
+        )
+
+        // Time Display (Centered Text)
+        Text(
+            text = time,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black // Text color
+        )
+    }
+}
+
+@Composable
+fun CircularProgressIndicatorBackGround(
+    modifier: Modifier = Modifier,
+    color: Color,
+    stroke: Int
+) {
+    val style = with(LocalDensity.current) { Stroke(stroke.dp.toPx()) }
+
+    Canvas(
+        modifier = modifier,
+        onDraw = {
+
+            val innerRadius = (size.minDimension - style.width) / 2
+
+            drawArc(
+                color = color,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                topLeft = Offset(
+                    (size / 2.0f).width - innerRadius,
+                    (size / 2.0f).height - innerRadius
+                ),
+                size = Size(innerRadius * 2, innerRadius * 2),
+                useCenter = false,
+                style = style
+            )
+        }
+    )
+}
+
 
 fun formatTime(seconds: Long): String {
     val minutes = seconds / 60
